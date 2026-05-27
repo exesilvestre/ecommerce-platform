@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field, conint
 from typing import List
+from decimal import Decimal
 
 class OrderItemCreateDTO(BaseModel):
     product_id: int
@@ -24,4 +25,3 @@ class OrderCreateResponseDTO(BaseModel):
     total_amount: Decimal
     status: str
     payment_status: str
-    
