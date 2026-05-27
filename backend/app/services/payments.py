@@ -1,6 +1,6 @@
 
 
-class PyamentResult:
+class PaymentResult:
     def __init__(self, external_reference: str):
         self.external_reference = external_reference
     
