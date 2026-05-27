@@ -1,0 +1,1543 @@
+{
+  "customer": {
+    "name": "Jane Homebuyer",
+    "email": "jane.homebuyer@example.com",
+    "phone": "+1-555-0100"
+  },
+  "products": [
+    {
+      "ref": "sofa-linen-3seat",
+      "name": "Linen 3-Seat Sofa",
+      "description": "Living room sofa, beige linen upholstery",
+      "price": "899.99"
+    },
+    {
+      "ref": "sofa-sectional-gray",
+      "name": "Gray L-Shaped Sectional",
+      "description": "Modular sectional with chaise",
+      "price": "1249.00"
+    },
+    {
+      "ref": "loveseat-velvet-navy",
+      "name": "Navy Velvet Loveseat",
+      "description": "Compact two-seat loveseat",
+      "price": "649.50"
+    },
+    {
+      "ref": "recliner-leather-brown",
+      "name": "Brown Leather Recliner",
+      "description": "Power recliner with USB ports",
+      "price": "799.00"
+    },
+    {
+      "ref": "coffee-table-glass",
+      "name": "Glass Top Coffee Table",
+      "description": "Tempered glass with metal frame",
+      "price": "279.99"
+    },
+    {
+      "ref": "end-table-marble",
+      "name": "Marble End Table",
+      "description": "Round accent table with marble top",
+      "price": "189.00"
+    },
+    {
+      "ref": "tv-stand-oak",
+      "name": "Oak TV Stand 65in",
+      "description": "Media console with cable management",
+      "price": "349.99"
+    },
+    {
+      "ref": "bookshelf-5tier-white",
+      "name": "5-Tier White Bookshelf",
+      "description": "Open shelving unit for home office",
+      "price": "129.99"
+    },
+    {
+      "ref": "dining-table-oak-6",
+      "name": "Oak Dining Table 6-Seat",
+      "description": "Solid oak rectangular dining table",
+      "price": "899.00"
+    },
+    {
+      "ref": "dining-chair-set-4",
+      "name": "Upholstered Dining Chairs (4)",
+      "description": "Fabric dining chairs with wood legs",
+      "price": "459.99"
+    },
+    {
+      "ref": "bar-stool-counter-2",
+      "name": "Counter Height Bar Stools (2)",
+      "description": "Swivel stools with backrest",
+      "price": "199.00"
+    },
+    {
+      "ref": "kitchen-island-cart",
+      "name": "Kitchen Island Cart",
+      "description": "Mobile cart with storage and towel bar",
+      "price": "249.50"
+    },
+    {
+      "ref": "bed-frame-queen-upholstered",
+      "name": "Queen Upholstered Bed Frame",
+      "description": "Platform bed with headboard",
+      "price": "549.00"
+    },
+    {
+      "ref": "mattress-queen-memory",
+      "name": "Queen Memory Foam Mattress",
+      "description": "12-inch gel-infused memory foam",
+      "price": "699.00"
+    },
+    {
+      "ref": "nightstand-pair-walnut",
+      "name": "Walnut Nightstands (Pair)",
+      "description": "Two-drawer bedside tables",
+      "price": "329.00"
+    },
+    {
+      "ref": "dresser-6drawer-white",
+      "name": "6-Drawer White Dresser",
+      "description": "Bedroom dresser with soft-close drawers",
+      "price": "479.99"
+    },
+    {
+      "ref": "wardrobe-armoire-2door",
+      "name": "2-Door Wardrobe Armoire",
+      "description": "Freestanding closet with hanging rod",
+      "price": "599.00"
+    },
+    {
+      "ref": "vanity-desk-mirror",
+      "name": "Vanity Desk with Mirror",
+      "description": "Makeup vanity with LED mirror",
+      "price": "389.00"
+    },
+    {
+      "ref": "office-desk-l-shaped",
+      "name": "L-Shaped Office Desk",
+      "description": "Corner desk with keyboard tray",
+      "price": "429.00"
+    },
+    {
+      "ref": "office-chair-ergonomic",
+      "name": "Ergonomic Office Chair",
+      "description": "Mesh back chair with lumbar support",
+      "price": "299.99"
+    },
+    {
+      "ref": "filing-cabinet-2drawer",
+      "name": "2-Drawer Filing Cabinet",
+      "description": "Lockable metal file cabinet",
+      "price": "159.00"
+    },
+    {
+      "ref": "patio-dining-set-5pc",
+      "name": "5-Piece Patio Dining Set",
+      "description": "Outdoor table with four chairs",
+      "price": "749.00"
+    },
+    {
+      "ref": "outdoor-sofa-sectional",
+      "name": "Outdoor Sectional Sofa",
+      "description": "Weather-resistant wicker sectional",
+      "price": "1099.00"
+    },
+    {
+      "ref": "hammock-stand-cotton",
+      "name": "Cotton Hammock with Stand",
+      "description": "Patio hammock with steel frame",
+      "price": "219.00"
+    },
+    {
+      "ref": "rug-area-8x10-gray",
+      "name": "8x10 Area Rug Gray",
+      "description": "Low-pile living room rug",
+      "price": "249.00"
+    },
+    {
+      "ref": "floor-lamp-arched-brass",
+      "name": "Arched Brass Floor Lamp",
+      "description": "Over-sofa arc lamp with linen shade",
+      "price": "179.99"
+    },
+    {
+      "ref": "bedside-lamp-set-2",
+      "name": "Bedside Lamps (Set of 2)",
+      "description": "Ceramic table lamps with fabric shades",
+      "price": "89.99"
+    },
+    {
+      "ref": "throw-pillow-set-4",
+      "name": "Decorative Throw Pillows (4)",
+      "description": "Assorted patterns for sofa or bed",
+      "price": "49.99"
+    },
+    {
+      "ref": "ottoman-storage-beige",
+      "name": "Storage Ottoman Beige",
+      "description": "Tufted ottoman with hidden storage",
+      "price": "129.00"
+    },
+    {
+      "ref": "bench-entryway-rustic",
+      "name": "Rustic Entryway Bench",
+      "description": "Wood bench with shoe storage shelf",
+      "price": "199.99"
+    }
+  ],
+  "warehouses": [
+    {
+      "name": "Home Furnishings - New York NY",
+      "address": "350 5th Ave, New York, NY 10118, USA",
+      "latitude": 40.7128,
+      "longitude": -74.006,
+      "inventory": [
+        {
+          "product_ref": "sofa-linen-3seat",
+          "quantity": 29
+        },
+        {
+          "product_ref": "sofa-sectional-gray",
+          "quantity": 87
+        },
+        {
+          "product_ref": "coffee-table-glass",
+          "quantity": 98
+        },
+        {
+          "product_ref": "end-table-marble",
+          "quantity": 124
+        },
+        {
+          "product_ref": "tv-stand-oak",
+          "quantity": 184
+        },
+        {
+          "product_ref": "bookshelf-5tier-white",
+          "quantity": 196
+        },
+        {
+          "product_ref": "dining-table-oak-6",
+          "quantity": 14
+        },
+        {
+          "product_ref": "dining-chair-set-4",
+          "quantity": 81
+        },
+        {
+          "product_ref": "bed-frame-queen-upholstered",
+          "quantity": 133
+        },
+        {
+          "product_ref": "mattress-queen-memory",
+          "quantity": 46
+        },
+        {
+          "product_ref": "dresser-6drawer-white",
+          "quantity": 66
+        },
+        {
+          "product_ref": "vanity-desk-mirror",
+          "quantity": 114
+        },
+        {
+          "product_ref": "office-chair-ergonomic",
+          "quantity": 187
+        },
+        {
+          "product_ref": "rug-area-8x10-gray",
+          "quantity": 35
+        },
+        {
+          "product_ref": "floor-lamp-arched-brass",
+          "quantity": 196
+        },
+        {
+          "product_ref": "bedside-lamp-set-2",
+          "quantity": 29
+        }
+      ]
+    },
+    {
+      "name": "Home Furnishings - Los Angeles CA",
+      "address": "700 S Flower St, Los Angeles, CA 90017, USA",
+      "latitude": 34.0522,
+      "longitude": -118.2437,
+      "inventory": [
+        {
+          "product_ref": "sofa-linen-3seat",
+          "quantity": 66
+        },
+        {
+          "product_ref": "loveseat-velvet-navy",
+          "quantity": 141
+        },
+        {
+          "product_ref": "coffee-table-glass",
+          "quantity": 135
+        },
+        {
+          "product_ref": "bookshelf-5tier-white",
+          "quantity": 44
+        },
+        {
+          "product_ref": "dining-table-oak-6",
+          "quantity": 51
+        },
+        {
+          "product_ref": "bar-stool-counter-2",
+          "quantity": 134
+        },
+        {
+          "product_ref": "nightstand-pair-walnut",
+          "quantity": 28
+        },
+        {
+          "product_ref": "dresser-6drawer-white",
+          "quantity": 103
+        },
+        {
+          "product_ref": "office-desk-l-shaped",
+          "quantity": 83
+        },
+        {
+          "product_ref": "office-chair-ergonomic",
+          "quantity": 35
+        },
+        {
+          "product_ref": "rug-area-8x10-gray",
+          "quantity": 72
+        },
+        {
+          "product_ref": "throw-pillow-set-4",
+          "quantity": 13
+        },
+        {
+          "product_ref": "ottoman-storage-beige",
+          "quantity": 67
+        }
+      ]
+    },
+    {
+      "name": "Home Furnishings - Chicago IL",
+      "address": "233 S Wacker Dr, Chicago, IL 60606, USA",
+      "latitude": 41.8781,
+      "longitude": -87.6298,
+      "inventory": [
+        {
+          "product_ref": "sofa-linen-3seat",
+          "quantity": 103
+        },
+        {
+          "product_ref": "sofa-sectional-gray",
+          "quantity": 161
+        },
+        {
+          "product_ref": "loveseat-velvet-navy",
+          "quantity": 178
+        },
+        {
+          "product_ref": "recliner-leather-brown",
+          "quantity": 23
+        },
+        {
+          "product_ref": "coffee-table-glass",
+          "quantity": 172
+        },
+        {
+          "product_ref": "end-table-marble",
+          "quantity": 198
+        },
+        {
+          "product_ref": "tv-stand-oak",
+          "quantity": 69
+        },
+        {
+          "product_ref": "dining-table-oak-6",
+          "quantity": 88
+        },
+        {
+          "product_ref": "dining-chair-set-4",
+          "quantity": 155
+        },
+        {
+          "product_ref": "bar-stool-counter-2",
+          "quantity": 171
+        },
+        {
+          "product_ref": "bed-frame-queen-upholstered",
+          "quantity": 18
+        },
+        {
+          "product_ref": "mattress-queen-memory",
+          "quantity": 120
+        },
+        {
+          "product_ref": "nightstand-pair-walnut",
+          "quantity": 65
+        },
+        {
+          "product_ref": "office-desk-l-shaped",
+          "quantity": 120
+        },
+        {
+          "product_ref": "floor-lamp-arched-brass",
+          "quantity": 81
+        },
+        {
+          "product_ref": "bedside-lamp-set-2",
+          "quantity": 103
+        },
+        {
+          "product_ref": "throw-pillow-set-4",
+          "quantity": 50
+        }
+      ]
+    },
+    {
+      "name": "Home Furnishings - Houston TX",
+      "address": "901 Bagby St, Houston, TX 77002, USA",
+      "latitude": 29.7604,
+      "longitude": -95.3698,
+      "inventory": [
+        {
+          "product_ref": "sofa-linen-3seat",
+          "quantity": 140
+        },
+        {
+          "product_ref": "loveseat-velvet-navy",
+          "quantity": 26
+        },
+        {
+          "product_ref": "coffee-table-glass",
+          "quantity": 20
+        },
+        {
+          "product_ref": "end-table-marble",
+          "quantity": 46
+        },
+        {
+          "product_ref": "bookshelf-5tier-white",
+          "quantity": 118
+        },
+        {
+          "product_ref": "dining-table-oak-6",
+          "quantity": 125
+        },
+        {
+          "product_ref": "dining-chair-set-4",
+          "quantity": 192
+        },
+        {
+          "product_ref": "kitchen-island-cart",
+          "quantity": 142
+        },
+        {
+          "product_ref": "bed-frame-queen-upholstered",
+          "quantity": 55
+        },
+        {
+          "product_ref": "dresser-6drawer-white",
+          "quantity": 177
+        },
+        {
+          "product_ref": "office-chair-ergonomic",
+          "quantity": 109
+        },
+        {
+          "product_ref": "rug-area-8x10-gray",
+          "quantity": 146
+        },
+        {
+          "product_ref": "floor-lamp-arched-brass",
+          "quantity": 118
+        }
+      ]
+    },
+    {
+      "name": "Home Furnishings - Phoenix AZ",
+      "address": "2 N Central Ave, Phoenix, AZ 85004, USA",
+      "latitude": 33.4484,
+      "longitude": -112.074,
+      "inventory": [
+        {
+          "product_ref": "sofa-sectional-gray",
+          "quantity": 46
+        },
+        {
+          "product_ref": "loveseat-velvet-navy",
+          "quantity": 63
+        },
+        {
+          "product_ref": "tv-stand-oak",
+          "quantity": 143
+        },
+        {
+          "product_ref": "bookshelf-5tier-white",
+          "quantity": 155
+        },
+        {
+          "product_ref": "dining-chair-set-4",
+          "quantity": 40
+        },
+        {
+          "product_ref": "bar-stool-counter-2",
+          "quantity": 56
+        },
+        {
+          "product_ref": "bed-frame-queen-upholstered",
+          "quantity": 92
+        },
+        {
+          "product_ref": "mattress-queen-memory",
+          "quantity": 194
+        },
+        {
+          "product_ref": "nightstand-pair-walnut",
+          "quantity": 139
+        },
+        {
+          "product_ref": "dresser-6drawer-white",
+          "quantity": 25
+        },
+        {
+          "product_ref": "office-desk-l-shaped",
+          "quantity": 194
+        },
+        {
+          "product_ref": "office-chair-ergonomic",
+          "quantity": 146
+        },
+        {
+          "product_ref": "rug-area-8x10-gray",
+          "quantity": 183
+        },
+        {
+          "product_ref": "floor-lamp-arched-brass",
+          "quantity": 155
+        },
+        {
+          "product_ref": "bedside-lamp-set-2",
+          "quantity": 177
+        },
+        {
+          "product_ref": "throw-pillow-set-4",
+          "quantity": 124
+        },
+        {
+          "product_ref": "bench-entryway-rustic",
+          "quantity": 84
+        }
+      ]
+    },
+    {
+      "name": "Home Furnishings - Philadelphia PA",
+      "address": "1 S Broad St, Philadelphia, PA 19107, USA",
+      "latitude": 39.9526,
+      "longitude": -75.1652,
+      "inventory": [
+        {
+          "product_ref": "sofa-linen-3seat",
+          "quantity": 25
+        },
+        {
+          "product_ref": "sofa-sectional-gray",
+          "quantity": 83
+        },
+        {
+          "product_ref": "coffee-table-glass",
+          "quantity": 94
+        },
+        {
+          "product_ref": "end-table-marble",
+          "quantity": 120
+        },
+        {
+          "product_ref": "tv-stand-oak",
+          "quantity": 180
+        },
+        {
+          "product_ref": "bookshelf-5tier-white",
+          "quantity": 192
+        },
+        {
+          "product_ref": "dining-table-oak-6",
+          "quantity": 199
+        },
+        {
+          "product_ref": "dining-chair-set-4",
+          "quantity": 77
+        },
+        {
+          "product_ref": "bar-stool-counter-2",
+          "quantity": 93
+        },
+        {
+          "product_ref": "bed-frame-queen-upholstered",
+          "quantity": 129
+        },
+        {
+          "product_ref": "mattress-queen-memory",
+          "quantity": 42
+        },
+        {
+          "product_ref": "wardrobe-armoire-2door",
+          "quantity": 13
+        },
+        {
+          "product_ref": "office-desk-l-shaped",
+          "quantity": 42
+        },
+        {
+          "product_ref": "rug-area-8x10-gray",
+          "quantity": 31
+        },
+        {
+          "product_ref": "floor-lamp-arched-brass",
+          "quantity": 192
+        },
+        {
+          "product_ref": "bedside-lamp-set-2",
+          "quantity": 25
+        }
+      ]
+    },
+    {
+      "name": "Home Furnishings - San Antonio TX",
+      "address": "300 Alamo Plaza, San Antonio, TX 78205, USA",
+      "latitude": 29.4241,
+      "longitude": -98.4936,
+      "inventory": [
+        {
+          "product_ref": "sofa-linen-3seat",
+          "quantity": 62
+        },
+        {
+          "product_ref": "loveseat-velvet-navy",
+          "quantity": 137
+        },
+        {
+          "product_ref": "coffee-table-glass",
+          "quantity": 131
+        },
+        {
+          "product_ref": "bookshelf-5tier-white",
+          "quantity": 40
+        },
+        {
+          "product_ref": "dining-table-oak-6",
+          "quantity": 47
+        },
+        {
+          "product_ref": "bar-stool-counter-2",
+          "quantity": 130
+        },
+        {
+          "product_ref": "nightstand-pair-walnut",
+          "quantity": 24
+        },
+        {
+          "product_ref": "dresser-6drawer-white",
+          "quantity": 99
+        },
+        {
+          "product_ref": "office-desk-l-shaped",
+          "quantity": 79
+        },
+        {
+          "product_ref": "office-chair-ergonomic",
+          "quantity": 31
+        },
+        {
+          "product_ref": "hammock-stand-cotton",
+          "quantity": 78
+        },
+        {
+          "product_ref": "rug-area-8x10-gray",
+          "quantity": 68
+        },
+        {
+          "product_ref": "throw-pillow-set-4",
+          "quantity": 198
+        }
+      ]
+    },
+    {
+      "name": "Home Furnishings - San Diego CA",
+      "address": "1100 Front St, San Diego, CA 92101, USA",
+      "latitude": 32.7157,
+      "longitude": -117.1611,
+      "inventory": [
+        {
+          "product_ref": "sofa-sectional-gray",
+          "quantity": 157
+        },
+        {
+          "product_ref": "loveseat-velvet-navy",
+          "quantity": 174
+        },
+        {
+          "product_ref": "end-table-marble",
+          "quantity": 194
+        },
+        {
+          "product_ref": "tv-stand-oak",
+          "quantity": 65
+        },
+        {
+          "product_ref": "dining-chair-set-4",
+          "quantity": 151
+        },
+        {
+          "product_ref": "bar-stool-counter-2",
+          "quantity": 167
+        },
+        {
+          "product_ref": "bed-frame-queen-upholstered",
+          "quantity": 14
+        },
+        {
+          "product_ref": "mattress-queen-memory",
+          "quantity": 116
+        },
+        {
+          "product_ref": "nightstand-pair-walnut",
+          "quantity": 61
+        },
+        {
+          "product_ref": "office-desk-l-shaped",
+          "quantity": 116
+        },
+        {
+          "product_ref": "patio-dining-set-5pc",
+          "quantity": 76
+        },
+        {
+          "product_ref": "outdoor-sofa-sectional",
+          "quantity": 103
+        },
+        {
+          "product_ref": "floor-lamp-arched-brass",
+          "quantity": 77
+        },
+        {
+          "product_ref": "bedside-lamp-set-2",
+          "quantity": 99
+        },
+        {
+          "product_ref": "throw-pillow-set-4",
+          "quantity": 46
+        }
+      ]
+    },
+    {
+      "name": "Home Furnishings - Dallas TX",
+      "address": "1200 Commerce St, Dallas, TX 75201, USA",
+      "latitude": 32.7767,
+      "longitude": -96.797,
+      "inventory": [
+        {
+          "product_ref": "sofa-linen-3seat",
+          "quantity": 136
+        },
+        {
+          "product_ref": "sofa-sectional-gray",
+          "quantity": 194
+        },
+        {
+          "product_ref": "coffee-table-glass",
+          "quantity": 16
+        },
+        {
+          "product_ref": "end-table-marble",
+          "quantity": 42
+        },
+        {
+          "product_ref": "tv-stand-oak",
+          "quantity": 102
+        },
+        {
+          "product_ref": "bookshelf-5tier-white",
+          "quantity": 114
+        },
+        {
+          "product_ref": "dining-table-oak-6",
+          "quantity": 121
+        },
+        {
+          "product_ref": "dining-chair-set-4",
+          "quantity": 188
+        },
+        {
+          "product_ref": "bed-frame-queen-upholstered",
+          "quantity": 51
+        },
+        {
+          "product_ref": "mattress-queen-memory",
+          "quantity": 153
+        },
+        {
+          "product_ref": "dresser-6drawer-white",
+          "quantity": 173
+        },
+        {
+          "product_ref": "office-chair-ergonomic",
+          "quantity": 105
+        },
+        {
+          "product_ref": "patio-dining-set-5pc",
+          "quantity": 113
+        },
+        {
+          "product_ref": "rug-area-8x10-gray",
+          "quantity": 142
+        },
+        {
+          "product_ref": "floor-lamp-arched-brass",
+          "quantity": 114
+        },
+        {
+          "product_ref": "bedside-lamp-set-2",
+          "quantity": 136
+        }
+      ]
+    },
+    {
+      "name": "Home Furnishings - Austin TX",
+      "address": "200 Congress Ave, Austin, TX 78701, USA",
+      "latitude": 30.2672,
+      "longitude": -97.7431,
+      "inventory": [
+        {
+          "product_ref": "sofa-linen-3seat",
+          "quantity": 173
+        },
+        {
+          "product_ref": "sofa-sectional-gray",
+          "quantity": 42
+        },
+        {
+          "product_ref": "loveseat-velvet-navy",
+          "quantity": 59
+        },
+        {
+          "product_ref": "bookshelf-5tier-white",
+          "quantity": 151
+        },
+        {
+          "product_ref": "dining-table-oak-6",
+          "quantity": 158
+        },
+        {
+          "product_ref": "bar-stool-counter-2",
+          "quantity": 52
+        },
+        {
+          "product_ref": "kitchen-island-cart",
+          "quantity": 175
+        },
+        {
+          "product_ref": "nightstand-pair-walnut",
+          "quantity": 135
+        },
+        {
+          "product_ref": "dresser-6drawer-white",
+          "quantity": 21
+        },
+        {
+          "product_ref": "office-desk-l-shaped",
+          "quantity": 190
+        },
+        {
+          "product_ref": "office-chair-ergonomic",
+          "quantity": 142
+        },
+        {
+          "product_ref": "rug-area-8x10-gray",
+          "quantity": 179
+        },
+        {
+          "product_ref": "bedside-lamp-set-2",
+          "quantity": 173
+        },
+        {
+          "product_ref": "throw-pillow-set-4",
+          "quantity": 120
+        }
+      ]
+    },
+    {
+      "name": "Home Furnishings - Jacksonville FL",
+      "address": "1 Independent Dr, Jacksonville, FL 32202, USA",
+      "latitude": 30.3322,
+      "longitude": -81.6557,
+      "inventory": [
+        {
+          "product_ref": "sofa-linen-3seat",
+          "quantity": 21
+        },
+        {
+          "product_ref": "sofa-sectional-gray",
+          "quantity": 79
+        },
+        {
+          "product_ref": "loveseat-velvet-navy",
+          "quantity": 96
+        },
+        {
+          "product_ref": "coffee-table-glass",
+          "quantity": 90
+        },
+        {
+          "product_ref": "end-table-marble",
+          "quantity": 116
+        },
+        {
+          "product_ref": "tv-stand-oak",
+          "quantity": 176
+        },
+        {
+          "product_ref": "dining-table-oak-6",
+          "quantity": 195
+        },
+        {
+          "product_ref": "dining-chair-set-4",
+          "quantity": 73
+        },
+        {
+          "product_ref": "bar-stool-counter-2",
+          "quantity": 89
+        },
+        {
+          "product_ref": "bed-frame-queen-upholstered",
+          "quantity": 125
+        },
+        {
+          "product_ref": "mattress-queen-memory",
+          "quantity": 38
+        },
+        {
+          "product_ref": "nightstand-pair-walnut",
+          "quantity": 172
+        },
+        {
+          "product_ref": "office-desk-l-shaped",
+          "quantity": 38
+        },
+        {
+          "product_ref": "hammock-stand-cotton",
+          "quantity": 37
+        },
+        {
+          "product_ref": "floor-lamp-arched-brass",
+          "quantity": 188
+        },
+        {
+          "product_ref": "bedside-lamp-set-2",
+          "quantity": 21
+        },
+        {
+          "product_ref": "throw-pillow-set-4",
+          "quantity": 157
+        }
+      ]
+    },
+    {
+      "name": "Home Furnishings - Columbus OH",
+      "address": "50 S Front St, Columbus, OH 43215, USA",
+      "latitude": 39.9612,
+      "longitude": -82.9988,
+      "inventory": [
+        {
+          "product_ref": "sofa-linen-3seat",
+          "quantity": 58
+        },
+        {
+          "product_ref": "loveseat-velvet-navy",
+          "quantity": 133
+        },
+        {
+          "product_ref": "coffee-table-glass",
+          "quantity": 127
+        },
+        {
+          "product_ref": "end-table-marble",
+          "quantity": 153
+        },
+        {
+          "product_ref": "bookshelf-5tier-white",
+          "quantity": 36
+        },
+        {
+          "product_ref": "dining-table-oak-6",
+          "quantity": 43
+        },
+        {
+          "product_ref": "dining-chair-set-4",
+          "quantity": 110
+        },
+        {
+          "product_ref": "nightstand-pair-walnut",
+          "quantity": 20
+        },
+        {
+          "product_ref": "dresser-6drawer-white",
+          "quantity": 95
+        },
+        {
+          "product_ref": "office-chair-ergonomic",
+          "quantity": 27
+        },
+        {
+          "product_ref": "filing-cabinet-2drawer",
+          "quantity": 32
+        },
+        {
+          "product_ref": "rug-area-8x10-gray",
+          "quantity": 64
+        },
+        {
+          "product_ref": "throw-pillow-set-4",
+          "quantity": 194
+        }
+      ]
+    },
+    {
+      "name": "Home Furnishings - Charlotte NC",
+      "address": "600 S Tryon St, Charlotte, NC 28202, USA",
+      "latitude": 35.2271,
+      "longitude": -80.8431,
+      "inventory": [
+        {
+          "product_ref": "sofa-sectional-gray",
+          "quantity": 153
+        },
+        {
+          "product_ref": "loveseat-velvet-navy",
+          "quantity": 170
+        },
+        {
+          "product_ref": "end-table-marble",
+          "quantity": 190
+        },
+        {
+          "product_ref": "tv-stand-oak",
+          "quantity": 61
+        },
+        {
+          "product_ref": "bookshelf-5tier-white",
+          "quantity": 73
+        },
+        {
+          "product_ref": "dining-chair-set-4",
+          "quantity": 147
+        },
+        {
+          "product_ref": "bar-stool-counter-2",
+          "quantity": 163
+        },
+        {
+          "product_ref": "bed-frame-queen-upholstered",
+          "quantity": 199
+        },
+        {
+          "product_ref": "mattress-queen-memory",
+          "quantity": 112
+        },
+        {
+          "product_ref": "nightstand-pair-walnut",
+          "quantity": 57
+        },
+        {
+          "product_ref": "dresser-6drawer-white",
+          "quantity": 132
+        },
+        {
+          "product_ref": "wardrobe-armoire-2door",
+          "quantity": 83
+        },
+        {
+          "product_ref": "office-desk-l-shaped",
+          "quantity": 112
+        },
+        {
+          "product_ref": "office-chair-ergonomic",
+          "quantity": 64
+        },
+        {
+          "product_ref": "rug-area-8x10-gray",
+          "quantity": 101
+        },
+        {
+          "product_ref": "floor-lamp-arched-brass",
+          "quantity": 73
+        },
+        {
+          "product_ref": "bedside-lamp-set-2",
+          "quantity": 95
+        },
+        {
+          "product_ref": "throw-pillow-set-4",
+          "quantity": 42
+        }
+      ]
+    },
+    {
+      "name": "Home Furnishings - Seattle WA",
+      "address": "400 Broad St, Seattle, WA 98109, USA",
+      "latitude": 47.6062,
+      "longitude": -122.3321,
+      "inventory": [
+        {
+          "product_ref": "sofa-linen-3seat",
+          "quantity": 132
+        },
+        {
+          "product_ref": "sofa-sectional-gray",
+          "quantity": 190
+        },
+        {
+          "product_ref": "coffee-table-glass",
+          "quantity": 12
+        },
+        {
+          "product_ref": "end-table-marble",
+          "quantity": 38
+        },
+        {
+          "product_ref": "tv-stand-oak",
+          "quantity": 98
+        },
+        {
+          "product_ref": "bookshelf-5tier-white",
+          "quantity": 110
+        },
+        {
+          "product_ref": "dining-table-oak-6",
+          "quantity": 117
+        },
+        {
+          "product_ref": "dining-chair-set-4",
+          "quantity": 184
+        },
+        {
+          "product_ref": "bed-frame-queen-upholstered",
+          "quantity": 47
+        },
+        {
+          "product_ref": "mattress-queen-memory",
+          "quantity": 149
+        },
+        {
+          "product_ref": "office-desk-l-shaped",
+          "quantity": 149
+        },
+        {
+          "product_ref": "rug-area-8x10-gray",
+          "quantity": 138
+        },
+        {
+          "product_ref": "floor-lamp-arched-brass",
+          "quantity": 110
+        },
+        {
+          "product_ref": "bedside-lamp-set-2",
+          "quantity": 132
+        },
+        {
+          "product_ref": "ottoman-storage-beige",
+          "quantity": 133
+        }
+      ]
+    },
+    {
+      "name": "Home Furnishings - Denver CO",
+      "address": "1701 Broadway, Denver, CO 80290, USA",
+      "latitude": 39.7392,
+      "longitude": -104.9903,
+      "inventory": [
+        {
+          "product_ref": "sofa-linen-3seat",
+          "quantity": 169
+        },
+        {
+          "product_ref": "loveseat-velvet-navy",
+          "quantity": 55
+        },
+        {
+          "product_ref": "coffee-table-glass",
+          "quantity": 49
+        },
+        {
+          "product_ref": "bookshelf-5tier-white",
+          "quantity": 147
+        },
+        {
+          "product_ref": "dining-table-oak-6",
+          "quantity": 154
+        },
+        {
+          "product_ref": "bar-stool-counter-2",
+          "quantity": 48
+        },
+        {
+          "product_ref": "nightstand-pair-walnut",
+          "quantity": 131
+        },
+        {
+          "product_ref": "dresser-6drawer-white",
+          "quantity": 17
+        },
+        {
+          "product_ref": "office-desk-l-shaped",
+          "quantity": 186
+        },
+        {
+          "product_ref": "office-chair-ergonomic",
+          "quantity": 138
+        },
+        {
+          "product_ref": "filing-cabinet-2drawer",
+          "quantity": 143
+        },
+        {
+          "product_ref": "rug-area-8x10-gray",
+          "quantity": 175
+        },
+        {
+          "product_ref": "throw-pillow-set-4",
+          "quantity": 116
+        }
+      ]
+    },
+    {
+      "name": "Home Furnishings - Boston MA",
+      "address": "800 Boylston St, Boston, MA 02199, USA",
+      "latitude": 42.3601,
+      "longitude": -71.0589,
+      "inventory": [
+        {
+          "product_ref": "sofa-sectional-gray",
+          "quantity": 75
+        },
+        {
+          "product_ref": "loveseat-velvet-navy",
+          "quantity": 92
+        },
+        {
+          "product_ref": "end-table-marble",
+          "quantity": 112
+        },
+        {
+          "product_ref": "tv-stand-oak",
+          "quantity": 172
+        },
+        {
+          "product_ref": "dining-chair-set-4",
+          "quantity": 69
+        },
+        {
+          "product_ref": "bar-stool-counter-2",
+          "quantity": 85
+        },
+        {
+          "product_ref": "bed-frame-queen-upholstered",
+          "quantity": 121
+        },
+        {
+          "product_ref": "mattress-queen-memory",
+          "quantity": 34
+        },
+        {
+          "product_ref": "nightstand-pair-walnut",
+          "quantity": 168
+        },
+        {
+          "product_ref": "vanity-desk-mirror",
+          "quantity": 102
+        },
+        {
+          "product_ref": "office-desk-l-shaped",
+          "quantity": 34
+        },
+        {
+          "product_ref": "floor-lamp-arched-brass",
+          "quantity": 184
+        },
+        {
+          "product_ref": "bedside-lamp-set-2",
+          "quantity": 17
+        },
+        {
+          "product_ref": "throw-pillow-set-4",
+          "quantity": 153
+        }
+      ]
+    },
+    {
+      "name": "Home Furnishings - Nashville TN",
+      "address": "501 Broadway, Nashville, TN 37203, USA",
+      "latitude": 36.1627,
+      "longitude": -86.7816,
+      "inventory": [
+        {
+          "product_ref": "sofa-linen-3seat",
+          "quantity": 54
+        },
+        {
+          "product_ref": "sofa-sectional-gray",
+          "quantity": 112
+        },
+        {
+          "product_ref": "coffee-table-glass",
+          "quantity": 123
+        },
+        {
+          "product_ref": "end-table-marble",
+          "quantity": 149
+        },
+        {
+          "product_ref": "tv-stand-oak",
+          "quantity": 20
+        },
+        {
+          "product_ref": "bookshelf-5tier-white",
+          "quantity": 32
+        },
+        {
+          "product_ref": "dining-table-oak-6",
+          "quantity": 39
+        },
+        {
+          "product_ref": "dining-chair-set-4",
+          "quantity": 106
+        },
+        {
+          "product_ref": "bed-frame-queen-upholstered",
+          "quantity": 158
+        },
+        {
+          "product_ref": "mattress-queen-memory",
+          "quantity": 71
+        },
+        {
+          "product_ref": "dresser-6drawer-white",
+          "quantity": 91
+        },
+        {
+          "product_ref": "office-chair-ergonomic",
+          "quantity": 23
+        },
+        {
+          "product_ref": "rug-area-8x10-gray",
+          "quantity": 60
+        },
+        {
+          "product_ref": "floor-lamp-arched-brass",
+          "quantity": 32
+        },
+        {
+          "product_ref": "bedside-lamp-set-2",
+          "quantity": 54
+        },
+        {
+          "product_ref": "bench-entryway-rustic",
+          "quantity": 150
+        }
+      ]
+    },
+    {
+      "name": "Home Furnishings - Detroit MI",
+      "address": "1 Woodward Ave, Detroit, MI 48226, USA",
+      "latitude": 42.3314,
+      "longitude": -83.0458,
+      "inventory": [
+        {
+          "product_ref": "sofa-sectional-gray",
+          "quantity": 149
+        },
+        {
+          "product_ref": "loveseat-velvet-navy",
+          "quantity": 166
+        },
+        {
+          "product_ref": "recliner-leather-brown",
+          "quantity": 200
+        },
+        {
+          "product_ref": "tv-stand-oak",
+          "quantity": 57
+        },
+        {
+          "product_ref": "bookshelf-5tier-white",
+          "quantity": 69
+        },
+        {
+          "product_ref": "bar-stool-counter-2",
+          "quantity": 159
+        },
+        {
+          "product_ref": "mattress-queen-memory",
+          "quantity": 108
+        },
+        {
+          "product_ref": "nightstand-pair-walnut",
+          "quantity": 53
+        },
+        {
+          "product_ref": "dresser-6drawer-white",
+          "quantity": 128
+        },
+        {
+          "product_ref": "office-desk-l-shaped",
+          "quantity": 108
+        },
+        {
+          "product_ref": "office-chair-ergonomic",
+          "quantity": 60
+        },
+        {
+          "product_ref": "rug-area-8x10-gray",
+          "quantity": 97
+        },
+        {
+          "product_ref": "bedside-lamp-set-2",
+          "quantity": 91
+        },
+        {
+          "product_ref": "throw-pillow-set-4",
+          "quantity": 38
+        }
+      ]
+    },
+    {
+      "name": "Home Furnishings - Portland OR",
+      "address": "1000 SW Broadway, Portland, OR 97205, USA",
+      "latitude": 45.5152,
+      "longitude": -122.6784,
+      "inventory": [
+        {
+          "product_ref": "sofa-linen-3seat",
+          "quantity": 128
+        },
+        {
+          "product_ref": "sofa-sectional-gray",
+          "quantity": 186
+        },
+        {
+          "product_ref": "coffee-table-glass",
+          "quantity": 197
+        },
+        {
+          "product_ref": "end-table-marble",
+          "quantity": 34
+        },
+        {
+          "product_ref": "tv-stand-oak",
+          "quantity": 94
+        },
+        {
+          "product_ref": "dining-table-oak-6",
+          "quantity": 113
+        },
+        {
+          "product_ref": "dining-chair-set-4",
+          "quantity": 180
+        },
+        {
+          "product_ref": "bar-stool-counter-2",
+          "quantity": 196
+        },
+        {
+          "product_ref": "bed-frame-queen-upholstered",
+          "quantity": 43
+        },
+        {
+          "product_ref": "mattress-queen-memory",
+          "quantity": 145
+        },
+        {
+          "product_ref": "nightstand-pair-walnut",
+          "quantity": 90
+        },
+        {
+          "product_ref": "office-desk-l-shaped",
+          "quantity": 145
+        },
+        {
+          "product_ref": "floor-lamp-arched-brass",
+          "quantity": 106
+        },
+        {
+          "product_ref": "bedside-lamp-set-2",
+          "quantity": 128
+        },
+        {
+          "product_ref": "throw-pillow-set-4",
+          "quantity": 75
+        }
+      ]
+    },
+    {
+      "name": "Home Furnishings - Las Vegas NV",
+      "address": "3790 Las Vegas Blvd S, Las Vegas, NV 89109, USA",
+      "latitude": 36.1699,
+      "longitude": -115.1398,
+      "inventory": [
+        {
+          "product_ref": "sofa-linen-3seat",
+          "quantity": 165
+        },
+        {
+          "product_ref": "loveseat-velvet-navy",
+          "quantity": 51
+        },
+        {
+          "product_ref": "coffee-table-glass",
+          "quantity": 45
+        },
+        {
+          "product_ref": "end-table-marble",
+          "quantity": 71
+        },
+        {
+          "product_ref": "bookshelf-5tier-white",
+          "quantity": 143
+        },
+        {
+          "product_ref": "dining-table-oak-6",
+          "quantity": 150
+        },
+        {
+          "product_ref": "nightstand-pair-walnut",
+          "quantity": 127
+        },
+        {
+          "product_ref": "dresser-6drawer-white",
+          "quantity": 13
+        },
+        {
+          "product_ref": "office-chair-ergonomic",
+          "quantity": 134
+        },
+        {
+          "product_ref": "patio-dining-set-5pc",
+          "quantity": 142
+        },
+        {
+          "product_ref": "outdoor-sofa-sectional",
+          "quantity": 169
+        },
+        {
+          "product_ref": "rug-area-8x10-gray",
+          "quantity": 171
+        },
+        {
+          "product_ref": "throw-pillow-set-4",
+          "quantity": 112
+        }
+      ]
+    }
+  ]
+}
