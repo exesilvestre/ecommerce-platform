@@ -1,4 +1,4 @@
-import type { OrderCreateRequest, Users, OrderCreateResponse, Product } from "./types";
+import type { OrderCreateRequest, Product } from "./types";
 
 const BASE = "/api";
 
