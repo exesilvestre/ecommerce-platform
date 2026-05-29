@@ -2,6 +2,10 @@
 
 Local stack with Docker Compose: PostgreSQL, FastAPI backend, and Next.js frontend.
 
+## Live demo
+
+**[https://ecommerce-platform-eta-sable.vercel.app/](https://ecommerce-platform-eta-sable.vercel.app/)** — add products to the cart, complete checkout, and confirm the order. The header should show **api online**. Card numbers ending in `0000` are declined (demo).
+
 ## Requirements
 
 - [Docker](https://docs.docker.com/get-docker/)
@@ -42,4 +46,4 @@ docker compose exec backend python seed/load_seed.py
 
 ## Development without Docker
 
-See `backend/.env.example` for configuration, and set `NEXT_PUBLIC_API_URL=http://localhost:8000` in the frontend before running `npm run dev`.
+See `backend/.env.example` for configuration, and set `API_URL=http://localhost:8000` in `frontend/.env.local` before running `npm run dev`.
