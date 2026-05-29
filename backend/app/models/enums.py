@@ -1,14 +1,15 @@
 import enum
 
+
 class OrderStatus(str, enum.Enum):
-    PENDING = "pending"
+    PENDING = "PENDING"
     AWAITING_PAYMENT = "awaiting_payment"
-    CONFIRMED = "confirmed"
-    CANCELLED = "cancelled"
-    FAILED = "failed"
+    CONFIRMED = "CONFIRMED"
+    CANCELLED = "CANCELLED"
+    FAILED = "FAILED"
 
 
 class PaymentStatus(str, enum.Enum):
-    PENDING = "pending"
-    SUCCESS = "success"
-    FAILED = "failed"
+    PENDING = "PENDING"
+    SUCCESS = "SUCCESS"
+    FAILED = "FAILED"
