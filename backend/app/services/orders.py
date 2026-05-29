@@ -13,10 +13,11 @@ from app.models.payment import Payment
 from app.models.warehouse import Warehouse
 from app.models.warehouse_inventory import WarehouseInventory
 from app.models.enums import OrderStatus, PaymentStatus
-from app.schemas.orders import OrderCreateDTO
+from app.schemas.orders import OrderCreateDTO, OrderCreateResponseDTO
 from app.services.geocoding import GeocodingService
-from app.services.payments import PaymentService, PaymentResult
+from app.services.payments import PaymentFailedError, PaymentService
 from app.utils import haversine_km
+from app.services.idempotency import IdempotencyService
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, or_, func
 
@@ -58,97 +59,118 @@ class OrderService:
 
         self.payment_service = payment_service or PaymentService()
 
-        async def create_order(self, db: AsyncSession, payload: OrderCreateDTO) -> CreateOrderResult:
+    async def create_order(
+        self, 
+        db: AsyncSession, 
+        payload: OrderCreateDTO,
+        *,
+        idempotency_key: str | None = None,
+        idempotency_request_hash: str | None = None,
+        ) -> CreateOrderResult:
 
-            quantities_by_product_id = {item.product_id: int(item.quantity) for item in order.items}
-            product_ids =await self._load_products(db, quantities_by_product_id.keys())
+        quantities_by_product_id: dict[int, int] = {}
+        for item in payload.items:
+            quantities_by_product_id[item.product_id] = (
+                quantities_by_product_id.get(item.product_id, 0) + int(item.quantity)
+            )
+        await self._ensure_customer_exists(db=db, customer_id=payload.customer_id)
+        products_by_id = await self._load_products(db=db, product_ids=list(quantities_by_product_id.keys()))
+        total_amount = self._calculate_total_amount(products_by_id=products_by_id, quantities_by_product_id=quantities_by_product_id)
+        ship_lat, ship_lon = await self.geocoding_service.geocode(payload.shipping_address)
+        candidate_warehouses = await self._find_candidate_warehouses(
+            db=db,
+            quantities_by_product_id=quantities_by_product_id,
+        )
 
-            await self._ensure_customer_exists(db, payload.customer_id)
+        if not candidate_warehouses:
+            raise NoWarehouseAvailableError(ERR_NO_WAREHOUSE)
 
-            products_by_id = await self._load_products(db, product_ids)
+        
+        warehouses_by_distance = sorted(
+            candidate_warehouses,
+            key=lambda warehouse: haversine_km(
+                ship_lat,
+                ship_lon,
+                float(warehouse.latitude),
+                float(warehouse.longitude),
+            ),
+        )
 
-            total_amount = self._calculate_total_amount(products_by_id, quantities_by_product_id)
-
-            ship_lat, ship_lon = await self._geocoding_service.geocode(payload.shipping_address)
-
-            candidate_warehouses = await self._find_candidate_warehouses(
+        async with db.begin():
+            chosen_warehouse = await self._reserve_inventory_for_nearest_warehouse(
                 db=db,
+                warehouses_by_distance=warehouses_by_distance,
                 quantities_by_product_id=quantities_by_product_id,
             )
 
-            if not candidate_warehouses:
-                raise NoWarehouseAvailableError(ERR_NO_WAREHOUSE)
-
-            
-            warehouses_by_distance = sorted(
-                candidate_warehouses,
-                key=lambda warehouse: haversine_km(
-                    ship_lat,
-                    ship_lon,
-                    float(warehouse.latitude),
-                    float(warehouse.longitude),
-                ),
+            order = Order(
+                customer_id=payload.customer_id,
+                warehouse_id=chosen_warehouse.id,
+                status=OrderStatus.PENDING,
+                total_amount=total_amount,
+                shipping_address=payload.shipping_address,
+                shipping_latitude=ship_lat,
+                shipping_longitude=ship_lon,
             )
+            db.add(order)
 
-            async with db.begin():
-                chosen_warehouse = await self._reserve_inventory_for_nearest_warehouse(
-                    db=db,
-                    warehouse_by_distance=warehouses_by_distance,
-                    quantities_by_product_id=quantities_by_product_id,
-                )
+            await db.flush()
 
-                order = Order(
-                    customer_id=payload.customer_id,
-                    warehouse_id=chosen_warehouse.id,
-                    status=OrderStatus.PENDING,
-                    total_amount=total_amount,
-                    shipping_address=payload.shipping_address,
-                    shipping_latitude=ship_lat,
-                    shipping_longitude=ship_lon,
-                )
-                db.add(order)
-
-                await db.flush()
-
-                for product_id, quantity in quantities_by_product_id.items():
-                    db.add(
-                        OrderItem(
-                            order_id = order.id,
-                            product_id = product_id,
-                            quantity = quantity,
-                            unit_price = products_by_id[product_id].price,
-                        )
+            for product_id, quantity in quantities_by_product_id.items():
+                db.add(
+                    OrderItem(
+                        order_id = order.id,
+                        product_id = product_id,
+                        quantity = quantity,
+                        unit_price = products_by_id[product_id].price,
                     )
-
-
-                payment = Payment(
-                    order_id = order.id,
-                    amount = total_amount,
-                    status = PaymentStatus.PENDING,
-                    external_reference = None,
-                    credit_card_number = payload.payment.credit_card_number,
-                    credit_card_expiration_date = payload.payment.credit_card_expiration_date,
-                )
-                db.add(payment)
-
-                await db.flush()
-
-                payment_result = await self._payment_service.charge(
-                    card_number = payload.payment.credit_card_number,
-                    expiration_date = payload.payment.credit_card_expiration_date,
-                    amount = total_amount,
                 )
 
-                if payment_result.status != PaymentStatus.SUCCESS:
-                   payment.status = PaymentStatus.FAILED
-                   raise OrderServiceError("Payment failed")
-                
-                payment.status = PaymentStatus.SUCCESS
-                payment.external_reference = payment_result.external_reference
-                order.status = OrderStatus.CONFIRMED
 
+            payment = Payment(
+                order_id = order.id,
+                amount = total_amount,
+                status = PaymentStatus.PENDING,
+                external_reference = None,
+                credit_card_number = payload.payment.credit_card_number,
+                credit_card_expiration_date = payload.payment.credit_card_expiration_date,
+            )
+            db.add(payment)
 
-                return CreateOrderResult(order=order, payment=payment)
+            await db.flush()
+
+            try:
+                payment_result = await self.payment_service.charge(
+                    card_number=payload.payment.credit_card_number,
+                    expiration_date=payload.payment.credit_card_expiration_date,
+                    amount=total_amount,
+                )
+            except PaymentFailedError:
+                payment.status = PaymentStatus.FAILED
+                raise
+
+            payment.status = PaymentStatus.SUCCESS
+            payment.external_reference = payment_result.external_reference
+            order.status = OrderStatus.CONFIRMED
+
+            result = CreateOrderResult(order=order, payment=payment)
+            if idempotency_key and idempotency_request_hash is not None:
+                response_dto = OrderCreateResponseDTO(
+                    order_id=order.id,
+                    warehouse_id=order.warehouse_id,
+                    total_amount=order.total_amount,
+                    status=str(order.status.value),
+                    payment_status=str(payment.status.value),
+                )
+                await IdempotencyService().save(
+                    db=db,
+                    key=idempotency_key,
+                    request_hash=idempotency_request_hash,
+                    response_status=201,
+                    response_body=response_dto.model_dump_json(),
+                )
+
+            return result
 
     async def _ensure_customer_exists(self, db: AsyncSession, customer_id: int) -> None:
         customer = await db.get(Customer, customer_id)

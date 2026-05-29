@@ -5,6 +5,7 @@ from app.models.warehouse_inventory import WarehouseInventory
 from app.models.order import Order
 from app.models.order_item import OrderItem
 from app.models.payment import Payment
+from app.models.idempotency_key import IdempotencyKey
 
 __all__ = [
     "Customer",
@@ -14,4 +15,5 @@ __all__ = [
     "Order",
     "OrderItem",
     "Payment",
+    "IdempotencyKey",
 ]
