@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, conint
+from pydantic import BaseModel, ConfigDict, Field, conint
 from typing import List
 from decimal import Decimal
 
@@ -14,14 +14,26 @@ class PaymentInputDTO(BaseModel):
 
 class OrderCreateDTO(BaseModel):
     customer_id: int
-    shipping_address: str =Field(min_length=5)
+    shipping_address: str = Field(min_length=5)
     items: List[OrderItemCreateDTO] = Field(min_length=1)
     payment: PaymentInputDTO
 
 
 class OrderCreateResponseDTO(BaseModel):
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "order_id": 1,
+                "warehouse_id": 2,
+                "total_amount": "899.99",
+                "status": "CONFIRMED",
+                "payment_status": "SUCCESS",
+            }
+        }
+    )
+
     order_id: int
     warehouse_id: int
-    total_amount: Decimal
+    total_amount: Decimal = Field(json_schema_extra={"example": "899.99"})
     status: str
     payment_status: str
