@@ -3,28 +3,24 @@ import "./CheckoutForm.css";
 
 export default function CheckoutForm({
   values,
-  idempotencyKey,
-  reuseKey,
   loading,
   disabled,
   onChange,
-  onReuseKeyChange,
-  onNewKey,
-  onSubmit,
+  onReview,
 }: CheckoutFormProps) {
   return (
     <form
       className="checkout-form"
       onSubmit={(e) => {
         e.preventDefault();
-        onSubmit();
+        onReview();
       }}
     >
       <div className="checkout-form__title">Checkout</div>
 
       <div className="checkout-form__field">
         <label className="checkout-form__label" htmlFor="customer-id">
-          customer_id
+          Customer
         </label>
         <input
           id="customer-id"
@@ -39,7 +35,7 @@ export default function CheckoutForm({
 
       <div className="checkout-form__field">
         <label className="checkout-form__label" htmlFor="shipping-address">
-          shipping_address
+          Shipping address
         </label>
         <input
           id="shipping-address"
@@ -54,7 +50,7 @@ export default function CheckoutForm({
 
       <div className="checkout-form__field">
         <label className="checkout-form__label" htmlFor="card-number">
-          credit_card_number
+          Card number
         </label>
         <input
           id="card-number"
@@ -72,11 +68,14 @@ export default function CheckoutForm({
             })
           }
         />
+        <span className="checkout-form__hint">
+          Cards ending in 0000 are declined (demo).
+        </span>
       </div>
 
       <div className="checkout-form__field">
         <label className="checkout-form__label" htmlFor="card-expiry">
-          expiration (MMYY)
+          Expiration (MM/YY)
         </label>
         <input
           id="card-expiry"
@@ -96,30 +95,12 @@ export default function CheckoutForm({
         />
       </div>
 
-      <div className="checkout-form__idempotency">
-        <span className="checkout-form__label">Idempotency-Key</span>
-        <span className="checkout-form__key">{idempotencyKey}</span>
-        <div className="checkout-form__idempotency-actions">
-          <label className="checkout-form__checkbox-label">
-            <input
-              type="checkbox"
-              checked={reuseKey}
-              onChange={(e) => onReuseKeyChange(e.target.checked)}
-            />
-            reuse key on submit
-          </label>
-          <button type="button" className="checkout-form__link" onClick={onNewKey}>
-            new key
-          </button>
-        </div>
-      </div>
-
       <button
         type="submit"
         className="checkout-form__submit"
         disabled={disabled || loading}
       >
-        {loading ? "submitting..." : "submit order"}
+        Review order
       </button>
     </form>
   );

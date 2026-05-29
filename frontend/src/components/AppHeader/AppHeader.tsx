@@ -11,7 +11,7 @@ export default function AppHeader({ healthy }: AppHeaderProps) {
         : "app-header__status--down";
   return (
     <header className="app-header">
-      <span className="app-header__title">Order API Tester</span>
+      <span className="app-header__title">Checkout</span>
       <span className={`app-header__status ${statusClass}`}>{status}</span>
     </header>
   );

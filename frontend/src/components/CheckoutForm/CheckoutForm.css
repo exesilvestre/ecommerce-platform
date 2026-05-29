@@ -38,44 +38,9 @@
   border-color: var(--fg);
 }
 
-.checkout-form__idempotency {
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
-  padding-top: 0.25rem;
-  border-top: 1px solid var(--border);
-}
-
-.checkout-form__key {
+.checkout-form__hint {
   font-size: 0.6875rem;
   color: var(--muted);
-  font-family: var(--font-geist-mono), monospace;
-  word-break: break-all;
-}
-
-.checkout-form__idempotency-actions {
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-}
-
-.checkout-form__checkbox-label {
-  font-size: 0.75rem;
-  color: var(--muted);
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  cursor: pointer;
-}
-
-.checkout-form__link {
-  background: none;
-  border: none;
-  color: var(--muted);
-  font-size: 0.75rem;
-  cursor: pointer;
-  padding: 0;
-  text-decoration: underline;
 }
 
 .checkout-form__submit {
