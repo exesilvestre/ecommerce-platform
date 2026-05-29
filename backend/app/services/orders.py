@@ -58,97 +58,97 @@ class OrderService:
 
         self.payment_service = payment_service or PaymentService()
 
-        async def create_order(self, db: AsyncSession, payload: OrderCreateDTO) -> CreateOrderResult:
+    async def create_order(self, db: AsyncSession, payload: OrderCreateDTO) -> CreateOrderResult:
 
-            quantities_by_product_id = {item.product_id: int(item.quantity) for item in order.items}
-            product_ids =await self._load_products(db, quantities_by_product_id.keys())
+        quantities_by_product_id = {item.product_id: int(item.quantity) for item in payload.items}
+        product_ids =await self._load_products(db, quantities_by_product_id.keys())
 
-            await self._ensure_customer_exists(db, payload.customer_id)
+        await self._ensure_customer_exists(db, payload.customer_id)
 
-            products_by_id = await self._load_products(db, product_ids)
+        products_by_id = await self._load_products(db, product_ids)
 
-            total_amount = self._calculate_total_amount(products_by_id, quantities_by_product_id)
+        total_amount = self._calculate_total_amount(products_by_id, quantities_by_product_id)
 
-            ship_lat, ship_lon = await self._geocoding_service.geocode(payload.shipping_address)
+        ship_lat, ship_lon = await self.geocoding_service.geocode(payload.shipping_address)
 
-            candidate_warehouses = await self._find_candidate_warehouses(
+        candidate_warehouses = await self._find_candidate_warehouses(
+            db=db,
+            quantities_by_product_id=quantities_by_product_id,
+        )
+
+        if not candidate_warehouses:
+            raise NoWarehouseAvailableError(ERR_NO_WAREHOUSE)
+
+        
+        warehouses_by_distance = sorted(
+            candidate_warehouses,
+            key=lambda warehouse: haversine_km(
+                ship_lat,
+                ship_lon,
+                float(warehouse.latitude),
+                float(warehouse.longitude),
+            ),
+        )
+
+        async with db.begin():
+            chosen_warehouse = await self._reserve_inventory_for_nearest_warehouse(
                 db=db,
+                warehouse_by_distance=warehouses_by_distance,
                 quantities_by_product_id=quantities_by_product_id,
             )
 
-            if not candidate_warehouses:
-                raise NoWarehouseAvailableError(ERR_NO_WAREHOUSE)
+            order = Order(
+                customer_id=payload.customer_id,
+                warehouse_id=chosen_warehouse.id,
+                status=OrderStatus.PENDING,
+                total_amount=total_amount,
+                shipping_address=payload.shipping_address,
+                shipping_latitude=ship_lat,
+                shipping_longitude=ship_lon,
+            )
+            db.add(order)
 
-            
-            warehouses_by_distance = sorted(
-                candidate_warehouses,
-                key=lambda warehouse: haversine_km(
-                    ship_lat,
-                    ship_lon,
-                    float(warehouse.latitude),
-                    float(warehouse.longitude),
-                ),
+            await db.flush()
+
+            for product_id, quantity in quantities_by_product_id.items():
+                db.add(
+                    OrderItem(
+                        order_id = order.id,
+                        product_id = product_id,
+                        quantity = quantity,
+                        unit_price = products_by_id[product_id].price,
+                    )
+                )
+
+
+            payment = Payment(
+                order_id = order.id,
+                amount = total_amount,
+                status = PaymentStatus.PENDING,
+                external_reference = None,
+                credit_card_number = payload.payment.credit_card_number,
+                credit_card_expiration_date = payload.payment.credit_card_expiration_date,
+            )
+            db.add(payment)
+
+            await db.flush()
+
+            payment_result = await self.payment_service.charge(
+                card_number = payload.payment.credit_card_number,
+                expiration_date = payload.payment.credit_card_expiration_date,
+                amount = total_amount,
             )
 
-            async with db.begin():
-                chosen_warehouse = await self._reserve_inventory_for_nearest_warehouse(
-                    db=db,
-                    warehouse_by_distance=warehouses_by_distance,
-                    quantities_by_product_id=quantities_by_product_id,
-                )
-
-                order = Order(
-                    customer_id=payload.customer_id,
-                    warehouse_id=chosen_warehouse.id,
-                    status=OrderStatus.PENDING,
-                    total_amount=total_amount,
-                    shipping_address=payload.shipping_address,
-                    shipping_latitude=ship_lat,
-                    shipping_longitude=ship_lon,
-                )
-                db.add(order)
-
-                await db.flush()
-
-                for product_id, quantity in quantities_by_product_id.items():
-                    db.add(
-                        OrderItem(
-                            order_id = order.id,
-                            product_id = product_id,
-                            quantity = quantity,
-                            unit_price = products_by_id[product_id].price,
-                        )
-                    )
+            if payment_result.status != PaymentStatus.SUCCESS:
+                payment.status = PaymentStatus.FAILED
+                raise OrderServiceError("Payment failed")
+            
+            payment.status = PaymentStatus.SUCCESS
+            payment.external_reference = payment_result.external_reference
+            order.status = OrderStatus.CONFIRMED
 
 
-                payment = Payment(
-                    order_id = order.id,
-                    amount = total_amount,
-                    status = PaymentStatus.PENDING,
-                    external_reference = None,
-                    credit_card_number = payload.payment.credit_card_number,
-                    credit_card_expiration_date = payload.payment.credit_card_expiration_date,
-                )
-                db.add(payment)
-
-                await db.flush()
-
-                payment_result = await self._payment_service.charge(
-                    card_number = payload.payment.credit_card_number,
-                    expiration_date = payload.payment.credit_card_expiration_date,
-                    amount = total_amount,
-                )
-
-                if payment_result.status != PaymentStatus.SUCCESS:
-                   payment.status = PaymentStatus.FAILED
-                   raise OrderServiceError("Payment failed")
-                
-                payment.status = PaymentStatus.SUCCESS
-                payment.external_reference = payment_result.external_reference
-                order.status = OrderStatus.CONFIRMED
-
-
-                return CreateOrderResult(order=order, payment=payment)
+            return CreateOrderResult(order=order, payment=payment)
 
     async def _ensure_customer_exists(self, db: AsyncSession, customer_id: int) -> None:
         customer = await db.get(Customer, customer_id)
