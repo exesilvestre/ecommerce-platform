@@ -1,15 +1,28 @@
 from decimal import Decimal
 
+from app.core.constants import ERR_PAYMENT_FAILED
+
+
+class PaymentFailedError(Exception):
+    def __init__(self, message: str = ERR_PAYMENT_FAILED):
+        super().__init__(message)
+
+
 class PaymentResult:
-    def __init__(self, external_reference: str, status: str):
+    def __init__(self, external_reference: str):
         self.external_reference = external_reference
-        self.status = status
-    
+
 
 class PaymentService:
-    async def charge(self, card_number: str, expiration_date: str, amount: Decimal) -> PaymentResult:
-       # Mock: always succeeds
-        _ = (card_number, expiration_date, amount)
+    async def charge(
+        self,
+        card_number: str,
+        expiration_date: str,
+        amount: Decimal,
+    ) -> PaymentResult:
+        _ = (expiration_date, amount)
 
-        return PaymentResult(external_reference="1234567890", status="success")
-    
+        if card_number.endswith("0000"):
+            raise PaymentFailedError()
+
+        return PaymentResult(external_reference="1234567890")

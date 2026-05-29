@@ -1,8 +1,7 @@
 
 
-from backend.app.db.session import Base
+from app.db.session import Base
 from sqlalchemy import Column, Integer, String, Text, DateTime
-from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 
 class IdempotencyKey(Base):
