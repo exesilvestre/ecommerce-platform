@@ -1,4 +1,25 @@
-from app.core.constants import ERR_PRODUCTS_NOT_FOUND
+from decimal import Decimal
+from app.core.constants import (
+    ERR_CUSTOMER_NOT_FOUND,
+    ERR_INSUFFICIENT_STOCK,
+    ERR_NO_WAREHOUSE,
+    ERR_PRODUCTS_NOT_FOUND,
+)
+from app.models.customer import Customer
+from app.models.product import Product
+from app.models.order import Order
+from app.models.order_item import OrderItem
+from app.models.payment import Payment
+from app.models.warehouse import Warehouse
+from app.models.warehouse_inventory import WarehouseInventory
+from app.models.enums import OrderStatus, PaymentStatus
+from app.schemas.orders import OrderCreateDTO
+from app.services.geocoding import GeocodingService
+from app.services.payments import PaymentService, PaymentResult
+from app.utils import haversine_km
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select, and_, or_, func
+
 
 class OrderServiceError(Exception):
     pass
@@ -40,11 +61,11 @@ class OrderService:
         async def create_order(self, db: AsyncSession, payload: OrderCreateDTO) -> CreateOrderResult:
 
             quantities_by_product_id = {item.product_id: int(item.quantity) for item in order.items}
-            product_ids = list(quantities_by_product_id.keys())
+            product_ids =await self._load_products(db, quantities_by_product_id.keys())
 
             await self._ensure_customer_exists(db, payload.customer_id)
 
-            products_by_id = await self._load_products(db, products_ids)
+            products_by_id = await self._load_products(db, product_ids)
 
             total_amount = self._calculate_total_amount(products_by_id, quantities_by_product_id)
 
@@ -73,7 +94,7 @@ class OrderService:
                 chosen_warehouse = await self._reserve_inventory_for_nearest_warehouse(
                     db=db,
                     warehouse_by_distance=warehouses_by_distance,
-                    warehouse_by_product_id=warehouses_by_product_id,
+                    quantities_by_product_id=quantities_by_product_id,
                 )
 
                 order = Order(
@@ -83,7 +104,7 @@ class OrderService:
                     total_amount=total_amount,
                     shipping_address=payload.shipping_address,
                     shipping_latitude=ship_lat,
-                    shipping_longitude=ship_lng,
+                    shipping_longitude=ship_lon,
                 )
                 db.add(order)
 
@@ -105,25 +126,22 @@ class OrderService:
                     amount = total_amount,
                     status = PaymentStatus.PENDING,
                     external_reference = None,
-                    credit_card_number = payload.credit_card_number,
-                    credit_card_expiration_date = payload.credit_card_expiration_date,
+                    credit_card_number = payload.payment.credit_card_number,
+                    credit_card_expiration_date = payload.payment.credit_card_expiration_date,
                 )
                 db.add(payment)
 
                 await db.flush()
 
                 payment_result = await self._payment_service.charge(
-                    card_number = payload.credit_card_number,
-                    expiration_date = payload.credit_card_expiration_date,
+                    card_number = payload.payment.credit_card_number,
+                    expiration_date = payload.payment.credit_card_expiration_date,
                     amount = total_amount,
                 )
 
                 if payment_result.status != PaymentStatus.SUCCESS:
-                    # REVIEW
-                    order.status = OrderStatus.failed
-                    db.add(order)
-                    await db.flush()
-                    raise PaymentFailedError(ERR_PAYMENT_FAILED)
+                   payment.status = PaymentStatus.FAILED
+                   raise OrderServiceError("Payment failed")
                 
                 payment.status = PaymentStatus.SUCCESS
                 payment.external_reference = payment_result.external_reference

@@ -9,7 +9,7 @@ class OrderItemCreateDTO(BaseModel):
 
 class PaymentInputDTO(BaseModel):
     credit_card_number: str = Field(min_length=16, max_length=16)
-    credit_card_expiration_date: str = Field(description="Format: MM/YY", min_length=4, max_length=4)
+    credit_card_expiration_date: str = Field(description="Format: MMYY", min_length=4, max_length=4)
 
 
 class OrderCreateDTO(BaseModel):
