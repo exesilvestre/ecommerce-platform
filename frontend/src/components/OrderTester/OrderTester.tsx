@@ -5,11 +5,14 @@ import AppHeader from "@/components/AppHeader";
 import ProductGrid from "@/components/ProductGrid";
 import CartPanel from "@/components/CartPanel";
 import CheckoutForm from "@/components/CheckoutForm";
+import OrderReview from "@/components/OrderReview";
 import ResponsePanel from "@/components/ResponsePanel";
 import type { CheckoutFormValues } from "@/components/CheckoutForm";
 import { checkHealth, createOrder } from "@/lib/api";
 import type { ApiResult, CartItem, Product } from "@/lib/types";
 import "./OrderTester.css";
+
+type CheckoutStep = "form" | "review";
 
 const defaultCheckout: CheckoutFormValues = {
   customerId: 1,
@@ -24,10 +27,7 @@ export default function OrderTester() {
   const [healthy, setHealthy] = useState<boolean | null>(null);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [checkout, setCheckout] = useState(defaultCheckout);
-  const [idempotencyKey, setIdempotencyKey] = useState(() =>
-    crypto.randomUUID(),
-  );
-  const [reuseKey, setReuseKey] = useState(false);
+  const [step, setStep] = useState<CheckoutStep>("form");
   const [result, setResult] = useState<ApiResult | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -36,6 +36,7 @@ export default function OrderTester() {
   }, []);
 
   function addToCart(product: Product) {
+    setStep("form");
     setCart((prev) => {
       const existing = prev.find((i) => i.product.id === product.id);
       if (existing) {
@@ -50,10 +51,12 @@ export default function OrderTester() {
   }
 
   function removeFromCart(productId: number) {
+    setStep("form");
     setCart((prev) => prev.filter((i) => i.product.id !== productId));
   }
 
   function changeQuantity(productId: number, quantity: number) {
+    setStep("form");
     if (quantity <= 0) {
       removeFromCart(productId);
       return;
@@ -65,11 +68,14 @@ export default function OrderTester() {
     );
   }
 
-  async function handleSubmit() {
-    setLoading(true);
+  function clearCart() {
+    setStep("form");
+    setCart([]);
+  }
 
-    const key = reuseKey ? idempotencyKey : crypto.randomUUID();
-    if (!reuseKey) setIdempotencyKey(key);
+  async function handleConfirm() {
+    setLoading(true);
+    setResult(null);
 
     const body = {
       customer_id: checkout.customerId,
@@ -81,9 +87,14 @@ export default function OrderTester() {
       payment: checkout.payment,
     };
 
-    const response = await createOrder(body, key);
+    const response = await createOrder(body);
     setResult(response);
     setLoading(false);
+
+    if (response.status === 201) {
+      setStep("form");
+      setCart([]);
+    }
   }
 
   return (
@@ -98,21 +109,27 @@ export default function OrderTester() {
             items={cart}
             onRemove={removeFromCart}
             onQuantityChange={changeQuantity}
-            onClear={() => setCart([])}
+            onClear={clearCart}
           />
         </div>
         <div className="order-tester__column order-tester__column--checkout">
-          <CheckoutForm
-            values={checkout}
-            idempotencyKey={idempotencyKey}
-            reuseKey={reuseKey}
-            loading={loading}
-            disabled={cart.length === 0}
-            onChange={setCheckout}
-            onReuseKeyChange={setReuseKey}
-            onNewKey={() => setIdempotencyKey(crypto.randomUUID())}
-            onSubmit={handleSubmit}
-          />
+          {step === "form" ? (
+            <CheckoutForm
+              values={checkout}
+              loading={loading}
+              disabled={cart.length === 0}
+              onChange={setCheckout}
+              onReview={() => setStep("review")}
+            />
+          ) : (
+            <OrderReview
+              items={cart}
+              checkout={checkout}
+              loading={loading}
+              onBack={() => setStep("form")}
+              onConfirm={handleConfirm}
+            />
+          )}
           <ResponsePanel result={result} loading={loading} />
         </div>
       </div>

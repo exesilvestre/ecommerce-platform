@@ -17,15 +17,12 @@ export async function getProducts(): Promise<Product[]> {
   return res.json();
 }
 
-export async function createOrder(
-  body: OrderCreateRequest,
-  idempotencyKey: string,
-) {
+export async function createOrder(body: OrderCreateRequest) {
   const res = await fetch(`${BASE}/orders`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Idempotency-Key": idempotencyKey,
+      "Idempotency-Key": crypto.randomUUID(),
     },
     body: JSON.stringify(body),
   });
@@ -35,6 +32,5 @@ export async function createOrder(
   return {
     status: res.status,
     data,
-    idempotencyKey,
   };
 }

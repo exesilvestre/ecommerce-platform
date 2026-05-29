@@ -8,12 +8,8 @@ export type CheckoutFormValues = {
 
 export type CheckoutFormProps = {
   values: CheckoutFormValues;
-  idempotencyKey: string;
-  reuseKey: boolean;
   loading: boolean;
   disabled: boolean;
   onChange: (values: CheckoutFormValues) => void;
-  onReuseKeyChange: (reuse: boolean) => void;
-  onNewKey: () => void;
-  onSubmit: () => void;
+  onReview: () => void;
 };

@@ -33,5 +33,4 @@ export type Product = {
   export type ApiResult<T = unknown> = {
     status: number;
     data: T;
-    idempotencyKey: string;
   };
