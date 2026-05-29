@@ -4,7 +4,6 @@ from typing import Annotated
 from fastapi import APIRouter, Body, Depends, Header, HTTPException, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.order_examples import ORDER_OPENAPI_EXAMPLES
 from app.db.session import get_db
 from app.schemas.orders import OrderCreateDTO, OrderCreateResponseDTO
 from app.services.idempotency import (
@@ -41,7 +40,7 @@ async def create_order(
     response: Response,
     db: Annotated[AsyncSession, Depends(get_db)],
     idempotency_key: Annotated[str, Header(alias="Idempotency-Key")],
-    payload: Annotated[OrderCreateDTO, Body(..., examples=ORDER_OPENAPI_EXAMPLES)],
+    payload: Annotated[OrderCreateDTO, Body()],
 ):
     request_hash = hash_order_request(payload)
     idem = IdempotencyService()
