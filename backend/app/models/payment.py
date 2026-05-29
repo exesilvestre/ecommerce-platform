@@ -10,7 +10,11 @@ class Payment(Base):
     id = Column(Integer, primary_key=True)
     order_id = Column(Integer, ForeignKey("orders.id"), unique=True, nullable=False)
     amount = Column(Numeric(10, 2), nullable=False)
-    status = Column(Enum(PaymentStatus), nullable=False, default=PaymentStatus.PENDING)
+    status = Column(
+        Enum(PaymentStatus, values_callable=lambda x: [e.value for e in x]),
+        nullable=False,
+        default=PaymentStatus.PENDING,
+    )
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
     external_reference = Column(String, nullable=True)    

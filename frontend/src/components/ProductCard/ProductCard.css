@@ -1,0 +1,37 @@
+.product-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  
+  .product-card__info {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .product-card__name {
+    font-size: 0.8125rem;
+  }
+  
+  .product-card__price {
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-family: var(--font-geist-mono), monospace;
+    margin-top: 0.125rem;
+  }
+  
+  .product-card__btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--fg);
+    font-size: 0.75rem;
+    padding: 0.25rem 0.625rem;
+    cursor: pointer;
+  }
+  
+  .product-card__btn:hover {
+    border-color: var(--fg);
+  }

@@ -11,7 +11,11 @@ class Order(Base):
     id = Column(Integer, primary_key=True)
     customer_id = Column(Integer, ForeignKey("customers.id"))
     warehouse_id = Column(Integer, ForeignKey("warehouses.id"))
-    status = Column(Enum(OrderStatus), nullable=False, default=OrderStatus.PENDING)
+    status = Column(
+        Enum(OrderStatus, values_callable=lambda x: [e.value for e in x]),
+        nullable=False,
+        default=OrderStatus.PENDING,
+    )
     total_amount = Column(Numeric(10, 2), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
