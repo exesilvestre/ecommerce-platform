@@ -1,8 +1,9 @@
 import json
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Response
+from fastapi import APIRouter, Body, Depends, Header, HTTPException, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.order_examples import ORDER_OPENAPI_EXAMPLES
 from app.db.session import get_db
 from app.schemas.orders import OrderCreateDTO, OrderCreateResponseDTO
 from app.services.idempotency import (
@@ -17,9 +18,25 @@ from app.services.payments import PaymentFailedError
 router = APIRouter(prefix="/orders", tags=["orders"])
 
 
-@router.post("", response_model=OrderCreateResponseDTO, status_code=201)
+@router.post(
+    "",
+    response_model=OrderCreateResponseDTO,
+    status_code=201,
+    summary="Create an order",
+    description=(
+        "Create an order from seed data. Requires an **Idempotency-Key** header (UUID). "
+        "Pick an example from the dropdown, then use **Try it out**."
+    ),
+    responses={
+        201: {"description": "Order created"},
+        402: {"description": "Payment declined"},
+        404: {"description": "Customer or product not found"},
+        409: {"description": "Idempotency conflict or request in progress"},
+        422: {"description": "No warehouse can fulfill the order or insufficient stock"},
+    },
+)
 async def create_order(
-    payload: OrderCreateDTO,
+    payload: OrderCreateDTO = Body(..., openapi_examples=ORDER_OPENAPI_EXAMPLES),
     response: Response,
     db: AsyncSession = Depends(get_db),
     idempotency_key: str = Header(..., alias="Idempotency-Key"),

@@ -47,3 +47,23 @@ docker compose exec backend python seed/load_seed.py
 ## Development without Docker
 
 See `backend/.env.example` for configuration, and set `API_URL=http://localhost:8000` in `frontend/.env.local` before running `npm run dev`.
+
+## API docs (Swagger)
+
+Interactive docs: **http://localhost:8000/docs**
+
+### How to test
+
+1. Open `POST /orders` → **Try it out**
+2. Set header **Idempotency-Key** to a new UUID (generate one per attempt)
+3. Pick an example from the **Examples** dropdown
+4. Execute
+
+Seed defaults: `customer_id=1`, `product_id=1` (Linen 3-Seat Sofa).
+
+| Example | Expected |
+|---------|----------|
+| Happy path | 201 — order created with `warehouse_id` |
+| Payment declined | 402 — card ending in `0000` |
+| Customer not found | 404 |
+| Product not found | 404 — includes `missing_product_ids` |
