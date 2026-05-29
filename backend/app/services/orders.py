@@ -1,3 +1,4 @@
+import json
 from decimal import Decimal
 
 from sqlalchemy import and_, func, or_, select
@@ -265,7 +266,7 @@ class OrderService:
                 db=db,
                 key=idempotency_key,
                 response_status=402,
-                response_body=f'{{"detail":"{ERR_PAYMENT_FAILED}"}}',
+                response_body=json.dumps({"detail": ERR_PAYMENT_FAILED}),
             )
 
     async def _confirm_order(
