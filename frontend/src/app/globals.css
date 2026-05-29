@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #000000;
+  --fg: #ededed;
+  --border: #333333;
+  --muted: #888888;
+  --accent: #ffffff;
+  --success: #22c55e;
+  --error: #ef4444;
+  --warn: #f59e0b;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
