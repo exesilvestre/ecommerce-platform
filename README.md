@@ -55,9 +55,10 @@ Interactive docs: **http://localhost:8000/docs**
 ### How to test
 
 1. Open `POST /orders` → **Try it out**
-2. Set header **Idempotency-Key** to a new UUID (generate one per attempt)
-3. Pick an example from the **Examples** dropdown
-4. Execute
+2. Set header **Idempotency-Key** to a new UUID
+3. In **Request body** (not Responses), open the **Examples** dropdown on the JSON editor
+4. Pick a scenario — the request JSON fills in automatically
+5. **Execute**
 
 Seed defaults: `customer_id=1`, `product_id=1` (Linen 3-Seat Sofa).
 

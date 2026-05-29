@@ -25,8 +25,9 @@ router = APIRouter(prefix="/orders", tags=["orders"])
     status_code=201,
     summary="Create an order",
     description=(
-        "Create an order from seed data. Requires an **Idempotency-Key** header (UUID). "
-        "Pick an example from the dropdown, then use **Try it out**."
+        "Create an order from seed data. Requires an **Idempotency-Key** header (UUID).\n\n"
+        "**How to test:** click **Try it out** → in **Request body**, open the "
+        "**Examples** dropdown (top-right of the JSON editor) → pick a scenario → Execute."
     ),
     responses={
         201: {"description": "Order created"},
