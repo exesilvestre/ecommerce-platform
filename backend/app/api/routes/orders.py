@@ -1,4 +1,5 @@
 import json
+from typing import Annotated
 
 from fastapi import APIRouter, Body, Depends, Header, HTTPException, Response
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -36,10 +37,10 @@ router = APIRouter(prefix="/orders", tags=["orders"])
     },
 )
 async def create_order(
-    payload: OrderCreateDTO = Body(..., openapi_examples=ORDER_OPENAPI_EXAMPLES),
     response: Response,
-    db: AsyncSession = Depends(get_db),
-    idempotency_key: str = Header(..., alias="Idempotency-Key"),
+    db: Annotated[AsyncSession, Depends(get_db)],
+    idempotency_key: Annotated[str, Header(alias="Idempotency-Key")],
+    payload: Annotated[OrderCreateDTO, Body(..., examples=ORDER_OPENAPI_EXAMPLES)],
 ):
     request_hash = hash_order_request(payload)
     idem = IdempotencyService()
