@@ -1,7 +1,7 @@
 import json
 from decimal import Decimal
 
-from sqlalchemy import exists, select
+from sqlalchemy import and_, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.constants import (
@@ -75,7 +75,6 @@ class OrderService:
         idempotency_key: str | None = None,
         idempotency_request_hash: str | None = None,
     ) -> CreateOrderResult:
-        breakpoint()
         quantities_by_product_id: dict[int, int] = {}
         for item in payload.items:
             quantities_by_product_id[item.product_id] = (
@@ -355,17 +354,26 @@ class OrderService:
         if not quantities_by_product_id:
             return []
 
-        stmt = select(Warehouse)
-        for product_id, quantity in quantities_by_product_id.items():
-            stmt = stmt.where(
-                exists(
-                    select(1).where(
-                        WarehouseInventory.warehouse_id == Warehouse.id,
-                        WarehouseInventory.product_id == product_id,
-                        WarehouseInventory.quantity >= quantity,
-                    )
-                )
+        n_products = len(quantities_by_product_id)
+        line_conditions = [
+            and_(
+                WarehouseInventory.product_id == product_id,
+                WarehouseInventory.quantity >= quantity,
             )
+            for product_id, quantity in quantities_by_product_id.items()
+        ]
+
+        eligible_warehouses = (
+            select(WarehouseInventory.warehouse_id)
+            .where(or_(*line_conditions))
+            .group_by(WarehouseInventory.warehouse_id)
+            .having(func.count() == n_products)
+        ).subquery()
+
+        stmt = select(Warehouse).join(
+            eligible_warehouses,
+            Warehouse.id == eligible_warehouses.c.warehouse_id,
+        )
         return (await db.execute(stmt)).scalars().all()
 
     def _has_sufficient_stock(

@@ -18,7 +18,7 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    op.execute("ALTER TYPE orderstatus ADD VALUE IF NOT EXISTS 'awaiting_payment'")
+    op.execute("ALTER TYPE orderstatus ADD VALUE IF NOT EXISTS 'AWAITING_PAYMENT'")
 
     op.execute(
         "ALTER TABLE idempotency_keys "

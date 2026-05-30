@@ -17,8 +17,23 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
+    # No-op if fresh install already has AWAITING_PAYMENT from a1b2c3d4e5f6.
     op.execute(
-        "ALTER TYPE orderstatus RENAME VALUE 'awaiting_payment' TO 'AWAITING_PAYMENT'"
+        """
+        DO $$
+        BEGIN
+            IF EXISTS (
+                SELECT 1
+                FROM pg_enum e
+                JOIN pg_type t ON e.enumtypid = t.oid
+                WHERE t.typname = 'orderstatus'
+                  AND e.enumlabel = 'awaiting_payment'
+            ) THEN
+                ALTER TYPE orderstatus RENAME VALUE 'awaiting_payment' TO 'AWAITING_PAYMENT';
+            END IF;
+        END
+        $$;
+        """
     )
 
 
