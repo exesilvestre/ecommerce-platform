@@ -16,7 +16,7 @@ def _patch_orders_post(schema: dict) -> None:
         media["example"] = {
             "order_id": 1,
             "warehouse_id": 2,
-            "total_amount": "899.99",
+            "total_amount": "999.00",
             "status": "CONFIRMED",
             "payment_status": "SUCCESS",
         }

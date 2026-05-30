@@ -26,6 +26,7 @@ class SeedLoadResult:
 
 class SeedLoader:
     _DELETE_ORDER = (
+        "idempotency_keys",
         "payments",
         "order_items",
         "orders",

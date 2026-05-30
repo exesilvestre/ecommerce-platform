@@ -25,7 +25,7 @@ class OrderCreateResponseDTO(BaseModel):
             "example": {
                 "order_id": 1,
                 "warehouse_id": 2,
-                "total_amount": "899.99",
+                "total_amount": "999.00",
                 "status": "CONFIRMED",
                 "payment_status": "SUCCESS",
             }
@@ -34,6 +34,6 @@ class OrderCreateResponseDTO(BaseModel):
 
     order_id: int
     warehouse_id: int
-    total_amount: Decimal = Field(json_schema_extra={"example": "899.99"})
+    total_amount: Decimal = Field(json_schema_extra={"example": "999.00"})
     status: str
     payment_status: str
