@@ -264,7 +264,7 @@ class OrderService:
             ).scalars().all()
 
             self._increment_stock(inventory_rows, quantities_by_product_id)
-            order.status = OrderStatus.CANCELLED
+            order.status = OrderStatus.FAILED
             payment.status = PaymentStatus.FAILED
 
         await db.commit()
