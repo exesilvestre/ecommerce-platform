@@ -1,7 +1,7 @@
 import json
 from decimal import Decimal
 
-from sqlalchemy import and_, func, or_, select
+from sqlalchemy import exists, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.constants import (
@@ -75,6 +75,7 @@ class OrderService:
         idempotency_key: str | None = None,
         idempotency_request_hash: str | None = None,
     ) -> CreateOrderResult:
+        breakpoint()
         quantities_by_product_id: dict[int, int] = {}
         for item in payload.items:
             quantities_by_product_id[item.product_id] = (
@@ -351,30 +352,21 @@ class OrderService:
         db: AsyncSession,
         quantities_by_product_id: dict[int, int],
     ) -> list[Warehouse]:
-        required_products_count = len(quantities_by_product_id)
-        inventory_conditions = [
-            and_(
-                WarehouseInventory.product_id == product_id,
-                WarehouseInventory.quantity >= quantity,
-            )
-            for product_id, quantity in quantities_by_product_id.items()
-        ]
-        candidate_ids_stmt = (
-            select(WarehouseInventory.warehouse_id)
-            .where(or_(*inventory_conditions))
-            .group_by(WarehouseInventory.warehouse_id)
-            .having(
-                func.count(func.distinct(WarehouseInventory.product_id))
-                == required_products_count
-            )
-        )
-        candidate_ids = (await db.execute(candidate_ids_stmt)).scalars().all()
-        if not candidate_ids:
+        if not quantities_by_product_id:
             return []
-        warehouses = (
-            await db.execute(select(Warehouse).where(Warehouse.id.in_(candidate_ids)))
-        ).scalars().all()
-        return warehouses
+
+        stmt = select(Warehouse)
+        for product_id, quantity in quantities_by_product_id.items():
+            stmt = stmt.where(
+                exists(
+                    select(1).where(
+                        WarehouseInventory.warehouse_id == Warehouse.id,
+                        WarehouseInventory.product_id == product_id,
+                        WarehouseInventory.quantity >= quantity,
+                    )
+                )
+            )
+        return (await db.execute(stmt)).scalars().all()
 
     def _has_sufficient_stock(
         self,
