@@ -5,7 +5,7 @@ from app.openapi import setup_openapi
 
 app = FastAPI(
     title="E-commerce Order API",
-    description="Minimal order management API for the Canals assessment. See POST /orders examples in /docs.",
+    description="Canals assessment — order API. Reviewer guide: ASSESSMENT.md. Test scenarios in /docs.",
 )
 register_exception_handlers(app)
 app.include_router(orders.router)
