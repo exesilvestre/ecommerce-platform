@@ -3,7 +3,7 @@ import enum
 
 class OrderStatus(str, enum.Enum):
     PENDING = "PENDING"
-    AWAITING_PAYMENT = "awaiting_payment"
+    AWAITING_PAYMENT = "AWAITING_PAYMENT"
     CONFIRMED = "CONFIRMED"
     CANCELLED = "CANCELLED"
     FAILED = "FAILED"
