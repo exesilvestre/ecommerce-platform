@@ -16,7 +16,7 @@ type CheckoutStep = "form" | "review";
 
 const defaultCheckout: CheckoutFormValues = {
   customerId: 1,
-  shippingAddress: "123 Main St, Austin, TX 78701, USA",
+  shippingAddress: "100 Congress Ave, Austin, TX 78701, USA",
   payment: {
     credit_card_number: "4111111111111111",
     credit_card_expiration_date: "1228",
