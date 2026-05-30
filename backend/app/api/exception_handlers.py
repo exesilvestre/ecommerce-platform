@@ -10,7 +10,7 @@ from app.core.constants import (
     ERR_PAYMENT_FAILED,
     ERR_PRODUCTS_NOT_FOUND,
 )
-from app.services.orders import (
+from app.domain.order_errors import (
     CustomerNotFoundError,
     InsufficientStockError,
     NoWarehouseAvailableError,
