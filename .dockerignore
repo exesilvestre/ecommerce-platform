@@ -1,0 +1,11 @@
+.git
+frontend/node_modules
+frontend/.next
+**/.venv
+**/venv
+**/__pycache__
+**/*.py[cod]
+**/.env
+**/.env.*
+**/.pytest_cache
+**/.mypy_cache
