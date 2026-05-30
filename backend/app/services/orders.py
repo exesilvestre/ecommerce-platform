@@ -114,6 +114,9 @@ class OrderService:
         await db.commit()
 
         stripe_idempotency_key = idempotency_key or f"order-{result.order.id}"
+        
+        # Mock PaymentService: create never raises; only confirm can fail (handled below).
+        # With real Stripe, create failures after commit would need the same compensation as confirm.
         payment_intent = await self.payment_service.create_payment_intent(
             amount=total_amount,
             currency="usd",
