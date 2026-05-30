@@ -1,7 +1,5 @@
 import json
-from decimal import Decimal
 
-from sqlalchemy import and_, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.constants import (
@@ -9,63 +7,49 @@ from app.core.constants import (
     ERR_INSUFFICIENT_STOCK,
     ERR_NO_WAREHOUSE,
     ERR_PAYMENT_FAILED,
-    ERR_PRODUCTS_NOT_FOUND,
 )
-from app.models.customer import Customer
-from app.models.enums import OrderStatus, PaymentStatus
-from app.models.order import Order
-from app.models.order_item import OrderItem
-from app.models.payment import Payment
+from app.domain.order_errors import (
+    CreateOrderResult,
+    CustomerNotFoundError,
+    InsufficientStockError,
+    NoWarehouseAvailableError,
+    ProductsNotFoundError,
+    WarehouseStockUnavailable,
+)
+from app.models.enums import OrderStatus
 from app.models.product import Product
-from app.models.warehouse import Warehouse
-from app.models.warehouse_inventory import WarehouseInventory
+from app.repositories.catalog_repository import CatalogRepository
+from app.repositories.inventory_repository import InventoryRepository
+from app.repositories.order_repository import OrderRepository
 from app.schemas.orders import OrderCreateDTO, OrderCreateResponseDTO
+from app.services.warehouses import WarehouseService
 from app.services.geocoding import GeocodingService
 from app.services.idempotency import IdempotencyService
+from app.services.inventory import InventoryService
 from app.services.payments import PaymentFailedError, PaymentService
-from app.utils import haversine_km
-
-
-class OrderServiceError(Exception):
-    pass
-
-
-class CustomerNotFoundError(OrderServiceError):
-    pass
-
-
-class ProductsNotFoundError(OrderServiceError):
-    def __init__(self, missing_product_ids: list[int]):
-        self.missing_product_ids = missing_product_ids
-        super().__init__(ERR_PRODUCTS_NOT_FOUND)
-
-
-class NoWarehouseAvailableError(OrderServiceError):
-    pass
-
-
-class InsufficientStockError(OrderServiceError):
-    pass
-
-
-class _WarehouseStockUnavailable(Exception):
-    pass
-
-
-class CreateOrderResult:
-    def __init__(self, order: Order, payment: Payment):
-        self.order = order
-        self.payment = payment
+from app.utils import aggregate_quantities, calculate_total
 
 
 class OrderService:
     def __init__(
         self,
+        catalog_repository: CatalogRepository | None = None,
+        inventory_repository: InventoryRepository | None = None,
+        order_repository: OrderRepository | None = None,
+        inventory_service: InventoryService | None = None,
+        warehouse_service: WarehouseService | None = None,
         geocoding_service: GeocodingService | None = None,
         payment_service: PaymentService | None = None,
+        idempotency_service: IdempotencyService | None = None,
     ):
+        inventory_repository = inventory_repository or InventoryRepository()
+        self.catalog_repository = catalog_repository or CatalogRepository()
+        self.order_repository = order_repository or OrderRepository()
+        self.inventory_service = inventory_service or InventoryService(inventory_repository)
+        self.warehouse_service = warehouse_service or WarehouseService()
         self.geocoding_service = geocoding_service or GeocodingService()
         self.payment_service = payment_service or PaymentService()
+        self.idempotency_service = idempotency_service or IdempotencyService()
 
     async def create_order(
         self,
@@ -75,38 +59,26 @@ class OrderService:
         idempotency_key: str | None = None,
         idempotency_request_hash: str | None = None,
     ) -> CreateOrderResult:
-        quantities_by_product_id: dict[int, int] = {}
-        for item in payload.items:
-            quantities_by_product_id[item.product_id] = (
-                quantities_by_product_id.get(item.product_id, 0) + int(item.quantity)
-            )
+        quantities_by_product_id = aggregate_quantities(payload.items)
 
         await self._ensure_customer_exists(db=db, customer_id=payload.customer_id)
         products_by_id = await self._load_products(
             db=db, product_ids=list(quantities_by_product_id.keys())
         )
-        total_amount = self._calculate_total_amount(
+        total_amount = calculate_total(
             products_by_id=products_by_id,
             quantities_by_product_id=quantities_by_product_id,
         )
         ship_lat, ship_lon = await self.geocoding_service.geocode(payload.shipping_address)
-        candidate_warehouses = await self._find_candidate_warehouses(
+        warehouses_by_distance = await self.warehouse_service.find_fulfilling_by_distance(
             db=db,
             quantities_by_product_id=quantities_by_product_id,
+            ship_lat=ship_lat,
+            ship_lon=ship_lon,
         )
 
-        if not candidate_warehouses:
+        if not warehouses_by_distance:
             raise NoWarehouseAvailableError(ERR_NO_WAREHOUSE)
-
-        warehouses_by_distance = sorted(
-            candidate_warehouses,
-            key=lambda warehouse: haversine_km(
-                ship_lat,
-                ship_lon,
-                float(warehouse.latitude),
-                float(warehouse.longitude),
-            ),
-        )
 
         result: CreateOrderResult | None = None
         chosen_warehouse_id: int | None = None
@@ -114,19 +86,26 @@ class OrderService:
         for warehouse in warehouses_by_distance:
             try:
                 async with db.begin_nested():
-                    result = await self._try_reserve_at_warehouse(
+                    await self.inventory_service.reserve(
                         db=db,
-                        warehouse=warehouse,
+                        warehouse_id=warehouse.id,
                         quantities_by_product_id=quantities_by_product_id,
-                        payload=payload,
-                        products_by_id=products_by_id,
-                        total_amount=total_amount,
-                        ship_lat=ship_lat,
-                        ship_lon=ship_lon,
                     )
+                    order, payment = await self.order_repository.create_pending_order(
+                        db=db,
+                        customer_id=payload.customer_id,
+                        warehouse_id=warehouse.id,
+                        total_amount=total_amount,
+                        shipping_address=payload.shipping_address,
+                        shipping_latitude=ship_lat,
+                        shipping_longitude=ship_lon,
+                        quantities_by_product_id=quantities_by_product_id,
+                        products_by_id=products_by_id,
+                    )
+                    result = CreateOrderResult(order=order, payment=payment)
                     chosen_warehouse_id = warehouse.id
                 break
-            except _WarehouseStockUnavailable:
+            except WarehouseStockUnavailable:
                 continue
 
         if result is None or chosen_warehouse_id is None:
@@ -167,69 +146,6 @@ class OrderService:
             idempotency_request_hash=idempotency_request_hash,
         )
 
-    async def _try_reserve_at_warehouse(
-        self,
-        db: AsyncSession,
-        warehouse: Warehouse,
-        quantities_by_product_id: dict[int, int],
-        payload: OrderCreateDTO,
-        products_by_id: dict[int, Product],
-        total_amount: Decimal,
-        ship_lat: float,
-        ship_lon: float,
-    ) -> CreateOrderResult:
-        product_ids = sorted(quantities_by_product_id.keys())
-
-        inventory_rows = (
-            await db.execute(
-                select(WarehouseInventory)
-                .where(
-                    WarehouseInventory.warehouse_id == warehouse.id,
-                    WarehouseInventory.product_id.in_(product_ids),
-                )
-                .order_by(WarehouseInventory.product_id)
-                .with_for_update()
-            )
-        ).scalars().all()
-
-        if not self._has_sufficient_stock(inventory_rows, quantities_by_product_id):
-            raise _WarehouseStockUnavailable()
-
-        self._decrement_stock(inventory_rows, quantities_by_product_id)
-
-        order = Order(
-            customer_id=payload.customer_id,
-            warehouse_id=warehouse.id,
-            status=OrderStatus.AWAITING_PAYMENT,
-            total_amount=total_amount,
-            shipping_address=payload.shipping_address,
-            shipping_latitude=ship_lat,
-            shipping_longitude=ship_lon,
-        )
-        db.add(order)
-        await db.flush()
-
-        for product_id, quantity in quantities_by_product_id.items():
-            db.add(
-                OrderItem(
-                    order_id=order.id,
-                    product_id=product_id,
-                    quantity=quantity,
-                    unit_price=products_by_id[product_id].price,
-                )
-            )
-
-        payment = Payment(
-            order_id=order.id,
-            amount=total_amount,
-            status=PaymentStatus.PENDING,
-            payment_intent_id=None,
-        )
-        db.add(payment)
-        await db.flush()
-
-        return CreateOrderResult(order=order, payment=payment)
-
     async def _release_inventory_on_payment_failure(
         self,
         db: AsyncSession,
@@ -239,37 +155,22 @@ class OrderService:
         idempotency_key: str | None = None,
     ) -> None:
         async with db.begin():
-            order = await db.get(Order, order_id, with_for_update=True)
+            order = await self.order_repository.get_order_for_update(db=db, order_id=order_id)
             if order is None or order.status != OrderStatus.AWAITING_PAYMENT:
                 return
 
-            payment = (
-                await db.execute(
-                    select(Payment).where(Payment.order_id == order_id).with_for_update()
-                )
-            ).scalar_one()
-
-            product_ids = sorted(quantities_by_product_id.keys())
-            inventory_rows = (
-                await db.execute(
-                    select(WarehouseInventory)
-                    .where(
-                        WarehouseInventory.warehouse_id == warehouse_id,
-                        WarehouseInventory.product_id.in_(product_ids),
-                    )
-                    .order_by(WarehouseInventory.product_id)
-                    .with_for_update()
-                )
-            ).scalars().all()
-
-            self._increment_stock(inventory_rows, quantities_by_product_id)
-            order.status = OrderStatus.FAILED
-            payment.status = PaymentStatus.FAILED
+            payment = await self.order_repository.get_payment_for_update(db=db, order_id=order_id)
+            await self.inventory_service.release(
+                db=db,
+                warehouse_id=warehouse_id,
+                quantities_by_product_id=quantities_by_product_id,
+            )
+            self.order_repository.mark_failed(order, payment)
 
         await db.commit()
 
         if idempotency_key:
-            await IdempotencyService().complete(
+            await self.idempotency_service.complete(
                 db=db,
                 key=idempotency_key,
                 response_status=402,
@@ -285,17 +186,9 @@ class OrderService:
         idempotency_request_hash: str | None = None,
     ) -> CreateOrderResult:
         async with db.begin():
-            order = await db.get(Order, order_id, with_for_update=True)
-            payment = (
-                await db.execute(
-                    select(Payment).where(Payment.order_id == order_id).with_for_update()
-                )
-            ).scalar_one()
-
-            if order.status != OrderStatus.CONFIRMED:
-                order.status = OrderStatus.CONFIRMED
-                payment.status = PaymentStatus.SUCCESS
-                payment.payment_intent_id = payment_intent_id
+            order = await self.order_repository.get_order_for_update(db=db, order_id=order_id)
+            payment = await self.order_repository.get_payment_for_update(db=db, order_id=order_id)
+            self.order_repository.mark_confirmed(order, payment, payment_intent_id)
 
         await db.commit()
 
@@ -307,7 +200,7 @@ class OrderService:
                 status=str(order.status.value),
                 payment_status=str(payment.status.value),
             )
-            await IdempotencyService().complete(
+            await self.idempotency_service.complete(
                 db=db,
                 key=idempotency_key,
                 response_status=201,
@@ -317,7 +210,7 @@ class OrderService:
         return CreateOrderResult(order=order, payment=payment)
 
     async def _ensure_customer_exists(self, db: AsyncSession, customer_id: int) -> None:
-        customer = await db.get(Customer, customer_id)
+        customer = await self.catalog_repository.get_customer(db=db, customer_id=customer_id)
         if not customer:
             raise CustomerNotFoundError(ERR_CUSTOMER_NOT_FOUND)
 
@@ -326,86 +219,9 @@ class OrderService:
         db: AsyncSession,
         product_ids: list[int],
     ) -> dict[int, Product]:
-        rows = (
-            await db.execute(select(Product).where(Product.id.in_(product_ids)))
-        ).scalars().all()
-        products_by_id = {product.id: product for product in rows}
+        rows = await self.catalog_repository.get_products_by_ids(db=db, product_ids=product_ids)
+        products_by_id: dict[int, Product] = {product.id: product for product in rows}
         missing_ids = sorted(set(product_ids) - set(products_by_id.keys()))
         if missing_ids:
             raise ProductsNotFoundError(missing_ids)
         return products_by_id
-
-    def _calculate_total_amount(
-        self,
-        products_by_id: dict[int, Product],
-        quantities_by_product_id: dict[int, int],
-    ) -> Decimal:
-        total = Decimal("0.00")
-        for product_id, quantity in quantities_by_product_id.items():
-            unit_price = Decimal(str(products_by_id[product_id].price))
-            total += unit_price * quantity
-        return total
-
-    async def _find_candidate_warehouses(
-        self,
-        db: AsyncSession,
-        quantities_by_product_id: dict[int, int],
-    ) -> list[Warehouse]:
-        if not quantities_by_product_id:
-            return []
-
-        n_products = len(quantities_by_product_id)
-        line_conditions = [
-            and_(
-                WarehouseInventory.product_id == product_id,
-                WarehouseInventory.quantity >= quantity,
-            )
-            for product_id, quantity in quantities_by_product_id.items()
-        ]
-
-        eligible_warehouses = (
-            select(WarehouseInventory.warehouse_id)
-            .where(or_(*line_conditions))
-            .group_by(WarehouseInventory.warehouse_id)
-            .having(func.count() == n_products)
-        ).subquery()
-
-        stmt = select(Warehouse).join(
-            eligible_warehouses,
-            Warehouse.id == eligible_warehouses.c.warehouse_id,
-        )
-        return (await db.execute(stmt)).scalars().all()
-
-    def _has_sufficient_stock(
-        self,
-        inventory_rows: list[WarehouseInventory],
-        quantities_by_product_id: dict[int, int],
-    ) -> bool:
-        if len(inventory_rows) != len(quantities_by_product_id):
-            return False
-        inventory_by_product_id = {row.product_id: row for row in inventory_rows}
-        for product_id, requested_qty in quantities_by_product_id.items():
-            row = inventory_by_product_id.get(product_id)
-            if row is None or int(row.quantity) < requested_qty:
-                return False
-        return True
-
-    def _decrement_stock(
-        self,
-        inventory_rows: list[WarehouseInventory],
-        quantities_by_product_id: dict[int, int],
-    ) -> None:
-        inventory_by_product_id = {row.product_id: row for row in inventory_rows}
-        for product_id, requested_qty in quantities_by_product_id.items():
-            row = inventory_by_product_id[product_id]
-            row.quantity = int(row.quantity) - requested_qty
-
-    def _increment_stock(
-        self,
-        inventory_rows: list[WarehouseInventory],
-        quantities_by_product_id: dict[int, int],
-    ) -> None:
-        inventory_by_product_id = {row.product_id: row for row in inventory_rows}
-        for product_id, requested_qty in quantities_by_product_id.items():
-            row = inventory_by_product_id[product_id]
-            row.quantity = int(row.quantity) + requested_qty
