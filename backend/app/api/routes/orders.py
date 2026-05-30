@@ -2,10 +2,12 @@ import json
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Body, Depends, Header, HTTPException, Response
+from fastapi import APIRouter, Body, Depends, Header, HTTPException, Request, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_idempotency_service, get_order_service
+from app.core.config import settings
+from app.core.rate_limit import limiter
 from app.db.session import get_db
 from app.schemas.orders import OrderCreateDTO, OrderCreateResponseDTO
 from app.services.idempotency import (
@@ -33,13 +35,16 @@ router = APIRouter(prefix="/orders", tags=["orders"])
         402: {"description": "Payment declined"},
         404: {"description": "Customer or product not found"},
         409: {"description": "Idempotency conflict or request in progress"},
+        429: {"description": "Rate limit exceeded"},
         422: {
             "description": "Validation error (invalid Idempotency-Key or request body), "
             "or no warehouse / insufficient stock"
         },
     },
 )
+@limiter.limit(settings.rate_limit_orders)
 async def create_order(
+    request: Request,
     response: Response,
     db: Annotated[AsyncSession, Depends(get_db)],
     idempotency_key: Annotated[UUID, Header(alias="Idempotency-Key")],
