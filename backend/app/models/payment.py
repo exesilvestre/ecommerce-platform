@@ -1,8 +1,10 @@
-from app.db.session import Base
-from sqlalchemy import Column, Integer, ForeignKey, Float, DateTime, String, Enum
 from datetime import datetime
-from app.models.enums import PaymentStatus
+
+from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, String
 from sqlalchemy.types import Numeric
+
+from app.db.session import Base
+from app.models.enums import PaymentStatus
 
 
 class Payment(Base):
@@ -17,6 +19,5 @@ class Payment(Base):
     )
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
-    external_reference = Column(String, nullable=True)    
-    credit_card_number = Column(String, nullable=False)
-    credit_card_expiration_date = Column(String, nullable=False)
+    payment_intent_id = Column(String, nullable=True, unique=True)
+    external_reference = Column(String, nullable=True)

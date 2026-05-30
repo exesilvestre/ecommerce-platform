@@ -134,14 +134,23 @@ class OrderService:
 
         await db.commit()
 
+        stripe_idempotency_key = idempotency_key or f"order-{result.order.id}"
+        payment_intent = await self.payment_service.create_payment_intent(
+            amount=total_amount,
+            currency="usd",
+            description=f"Order #{result.order.id}",
+            metadata={"order_id": str(result.order.id)},
+            idempotency_key=stripe_idempotency_key,
+        )
+
         try:
-            payment_result = await self.payment_service.charge(
+            payment_intent = await self.payment_service.confirm_payment_intent(
+                payment_intent_id=payment_intent.id,
                 card_number=payload.payment.credit_card_number,
                 expiration_date=payload.payment.credit_card_expiration_date,
-                amount=total_amount,
             )
         except PaymentFailedError:
-            await self._compensate_order(
+            await self._release_inventory_on_payment_failure(
                 db=db,
                 order_id=result.order.id,
                 warehouse_id=chosen_warehouse_id,
@@ -153,7 +162,7 @@ class OrderService:
         return await self._confirm_order(
             db=db,
             order_id=result.order.id,
-            external_reference=payment_result.external_reference,
+            payment_intent_id=payment_intent.id,
             idempotency_key=idempotency_key,
             idempotency_request_hash=idempotency_request_hash,
         )
@@ -214,16 +223,14 @@ class OrderService:
             order_id=order.id,
             amount=total_amount,
             status=PaymentStatus.PENDING,
-            external_reference=None,
-            credit_card_number=payload.payment.credit_card_number,
-            credit_card_expiration_date=payload.payment.credit_card_expiration_date,
+            payment_intent_id=None,
         )
         db.add(payment)
         await db.flush()
 
         return CreateOrderResult(order=order, payment=payment)
 
-    async def _compensate_order(
+    async def _release_inventory_on_payment_failure(
         self,
         db: AsyncSession,
         order_id: int,
@@ -273,7 +280,7 @@ class OrderService:
         self,
         db: AsyncSession,
         order_id: int,
-        external_reference: str,
+        payment_intent_id: str,
         idempotency_key: str | None = None,
         idempotency_request_hash: str | None = None,
     ) -> CreateOrderResult:
@@ -288,7 +295,7 @@ class OrderService:
             if order.status != OrderStatus.CONFIRMED:
                 order.status = OrderStatus.CONFIRMED
                 payment.status = PaymentStatus.SUCCESS
-                payment.external_reference = external_reference
+                payment.payment_intent_id = payment_intent_id
 
         await db.commit()
 
