@@ -1,6 +1,8 @@
-from app.db.session import Base
-from sqlalchemy import Column, Integer, String, Float, DateTime
 from datetime import datetime
+
+from sqlalchemy import Column, DateTime, Float, Integer, String
+
+from app.db.session import Base
 
 
 class Warehouse(Base):
@@ -11,4 +13,6 @@ class Warehouse(Base):
     latitude = Column(Float, nullable=False)
     longitude = Column(Float, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    updated_at = Column(
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
+    )

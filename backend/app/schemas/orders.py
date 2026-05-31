@@ -1,6 +1,7 @@
-from pydantic import BaseModel, ConfigDict, Field, conint
-from typing import List
 from decimal import Decimal
+
+from pydantic import BaseModel, ConfigDict, Field, conint
+
 
 class OrderItemCreateDTO(BaseModel):
     product_id: int
@@ -9,13 +10,15 @@ class OrderItemCreateDTO(BaseModel):
 
 class PaymentInputDTO(BaseModel):
     credit_card_number: str = Field(min_length=16, max_length=16)
-    credit_card_expiration_date: str = Field(description="Format: MMYY", min_length=4, max_length=4)
+    credit_card_expiration_date: str = Field(
+        description="Format: MMYY", min_length=4, max_length=4
+    )
 
 
 class OrderCreateDTO(BaseModel):
     customer_id: int
     shipping_address: str = Field(min_length=5)
-    items: List[OrderItemCreateDTO] = Field(min_length=1)
+    items: list[OrderItemCreateDTO] = Field(min_length=1)
     payment: PaymentInputDTO
 
 

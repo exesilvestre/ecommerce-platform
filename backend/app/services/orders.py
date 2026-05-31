@@ -22,11 +22,11 @@ from app.repositories.catalog_repository import CatalogRepository
 from app.repositories.inventory_repository import InventoryRepository
 from app.repositories.order_repository import OrderRepository
 from app.schemas.orders import OrderCreateDTO, OrderCreateResponseDTO
-from app.services.warehouses import WarehouseService
 from app.services.geocoding import GeocodingService
 from app.services.idempotency import IdempotencyService
 from app.services.inventory import InventoryService
 from app.services.payments import PaymentFailedError, PaymentService
+from app.services.warehouses import WarehouseService
 from app.utils import aggregate_quantities, calculate_total
 
 
@@ -45,7 +45,9 @@ class OrderService:
         inventory_repository = inventory_repository or InventoryRepository()
         self.catalog_repository = catalog_repository or CatalogRepository()
         self.order_repository = order_repository or OrderRepository()
-        self.inventory_service = inventory_service or InventoryService(inventory_repository)
+        self.inventory_service = inventory_service or InventoryService(
+            inventory_repository
+        )
         self.warehouse_service = warehouse_service or WarehouseService()
         self.geocoding_service = geocoding_service or GeocodingService()
         self.payment_service = payment_service or PaymentService()
@@ -69,12 +71,16 @@ class OrderService:
             products_by_id=products_by_id,
             quantities_by_product_id=quantities_by_product_id,
         )
-        ship_lat, ship_lon = await self.geocoding_service.geocode(payload.shipping_address)
-        warehouses_by_distance = await self.warehouse_service.find_fulfilling_by_distance(
-            db=db,
-            quantities_by_product_id=quantities_by_product_id,
-            ship_lat=ship_lat,
-            ship_lon=ship_lon,
+        ship_lat, ship_lon = await self.geocoding_service.geocode(
+            payload.shipping_address
+        )
+        warehouses_by_distance = (
+            await self.warehouse_service.find_fulfilling_by_distance(
+                db=db,
+                quantities_by_product_id=quantities_by_product_id,
+                ship_lat=ship_lat,
+                ship_lon=ship_lon,
+            )
         )
 
         if not warehouses_by_distance:
@@ -114,7 +120,7 @@ class OrderService:
         await db.commit()
 
         stripe_idempotency_key = idempotency_key or f"order-{result.order.id}"
-        
+
         # Mock PaymentService: create never raises; only confirm can fail (handled below).
         # With real Stripe, create failures after commit would need the same compensation as confirm.
         payment_intent = await self.payment_service.create_payment_intent(
@@ -158,11 +164,15 @@ class OrderService:
         idempotency_key: str | None = None,
     ) -> None:
         async with db.begin():
-            order = await self.order_repository.get_order_for_update(db=db, order_id=order_id)
+            order = await self.order_repository.get_order_for_update(
+                db=db, order_id=order_id
+            )
             if order is None or order.status != OrderStatus.AWAITING_PAYMENT:
                 return
 
-            payment = await self.order_repository.get_payment_for_update(db=db, order_id=order_id)
+            payment = await self.order_repository.get_payment_for_update(
+                db=db, order_id=order_id
+            )
             await self.inventory_service.release(
                 db=db,
                 warehouse_id=warehouse_id,
@@ -189,8 +199,12 @@ class OrderService:
         idempotency_request_hash: str | None = None,
     ) -> CreateOrderResult:
         async with db.begin():
-            order = await self.order_repository.get_order_for_update(db=db, order_id=order_id)
-            payment = await self.order_repository.get_payment_for_update(db=db, order_id=order_id)
+            order = await self.order_repository.get_order_for_update(
+                db=db, order_id=order_id
+            )
+            payment = await self.order_repository.get_payment_for_update(
+                db=db, order_id=order_id
+            )
             self.order_repository.mark_confirmed(order, payment, payment_intent_id)
 
         await db.commit()
@@ -213,7 +227,9 @@ class OrderService:
         return CreateOrderResult(order=order, payment=payment)
 
     async def _ensure_customer_exists(self, db: AsyncSession, customer_id: int) -> None:
-        customer = await self.catalog_repository.get_customer(db=db, customer_id=customer_id)
+        customer = await self.catalog_repository.get_customer(
+            db=db, customer_id=customer_id
+        )
         if not customer:
             raise CustomerNotFoundError(ERR_CUSTOMER_NOT_FOUND)
 
@@ -222,7 +238,9 @@ class OrderService:
         db: AsyncSession,
         product_ids: list[int],
     ) -> dict[int, Product]:
-        rows = await self.catalog_repository.get_products_by_ids(db=db, product_ids=product_ids)
+        rows = await self.catalog_repository.get_products_by_ids(
+            db=db, product_ids=product_ids
+        )
         products_by_id: dict[int, Product] = {product.id: product for product in rows}
         missing_ids = sorted(set(product_ids) - set(products_by_id.keys()))
         if missing_ids:

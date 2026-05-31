@@ -12,7 +12,8 @@ SEED_ROOT = Path(__file__).resolve().parent
 BACKEND_ROOT = SEED_ROOT.parent
 sys.path.insert(0, str(SEED_ROOT))
 
-from loader import SeedLoadError, SeedLoader  # noqa: E402
+from loader import SeedLoader, SeedLoadError  # noqa: E402
+
 DEFAULT_SEED_FILE = SEED_ROOT / "data" / "seed.json"
 
 
@@ -66,9 +67,7 @@ def main(seed_file: Path, database_url: str | None) -> None:
         f"1 customer, {result.product_count} products, "
         f"{result.warehouse_count} warehouses, {result.inventory_count} inventory rows"
     )
-    click.echo(
-        f"Default customer_id: {result.customer_id} ({result.customer_email})"
-    )
+    click.echo(f"Default customer_id: {result.customer_id} ({result.customer_email})")
     click.echo(
         "Use customer_id=1 for POST /orders. "
         "Example product_ids: 1, 9, 14 (order in data/seed.json)."

@@ -3,7 +3,6 @@ from typing import Self
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
-
 DEFAULT_CUSTOMER_EMAIL = "jane.homebuyer@example.com"
 
 
@@ -50,7 +49,9 @@ class SeedWarehouseSchema(BaseModel):
     @classmethod
     def longitude_in_usa_range(cls, value: float) -> float:
         if not -125.0 <= value <= -66.0:
-            raise ValueError("longitude must be within continental USA range (-125 to -66)")
+            raise ValueError(
+                "longitude must be within continental USA range (-125 to -66)"
+            )
         return value
 
 

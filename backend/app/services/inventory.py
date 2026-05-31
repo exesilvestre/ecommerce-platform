@@ -1,7 +1,8 @@
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.domain.order_errors import WarehouseStockUnavailable
 from app.models.warehouse_inventory import WarehouseInventory
 from app.repositories.inventory_repository import InventoryRepository
-from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class InventoryService:
