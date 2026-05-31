@@ -62,9 +62,17 @@ docker compose exec backend python seed/load_seed.py
 
 See `backend/.env.example` for configuration, and set `API_URL=http://localhost:8000` in `frontend/.env.local` before running `npm run dev`.
 
+## Documentation
+
+| Doc | Purpose |
+|-----|---------|
+| [DECISION_LOG.md](DECISION_LOG.md) | Architectural decisions for `POST /orders` (mocks, row locking, idempotency) |
+| [SEED_DATA.md](SEED_DATA.md) | Seed catalog, demo addresses, and test scenarios |
+| [docs/er-diagram.png](docs/er-diagram.png) | ER diagram — place your PNG in the `docs/` folder |
+
 ## For reviewers
 
-Start with **[SEED_DATA.md](SEED_DATA.md)** — seed catalog, demo shipping addresses, and expected outcomes per scenario.
+Start with **[SEED_DATA.md](SEED_DATA.md)** — seed catalog, demo shipping addresses, and expected outcomes per scenario. For design rationale (why mocks, how row locks work), see **[DECISION_LOG.md](DECISION_LOG.md)**.
 
 **Quick test via Swagger (production or local):**
 
