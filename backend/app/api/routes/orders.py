@@ -78,7 +78,9 @@ async def create_order(
     except PaymentFailedError:
         raise
     except Exception:
-        await idem.abandon(db=db, key=key)
+        # Session may already be closed after inventory commit (payment phase).
+        if db.is_active:
+            await idem.abandon(db=db, key=key)
         raise
 
     return OrderCreateResponseDTO(
