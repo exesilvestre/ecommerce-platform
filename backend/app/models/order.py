@@ -1,9 +1,10 @@
-from app.db.session import Base
-from sqlalchemy import Column, Integer, ForeignKey, Float, DateTime, String, Enum
 from datetime import datetime
-from app.models.enums import OrderStatus
+
+from sqlalchemy import Column, DateTime, Enum, Float, ForeignKey, Integer, String
 from sqlalchemy.types import Numeric
 
+from app.db.session import Base
+from app.models.enums import OrderStatus
 
 
 class Order(Base):
@@ -18,7 +19,9 @@ class Order(Base):
     )
     total_amount = Column(Numeric(10, 2), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    updated_at = Column(
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
+    )
     shipping_address = Column(String, nullable=False)
     shipping_latitude = Column(Float, nullable=False)
     shipping_longitude = Column(Float, nullable=False)

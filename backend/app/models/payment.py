@@ -18,6 +18,8 @@ class Payment(Base):
         default=PaymentStatus.PENDING,
     )
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    updated_at = Column(
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
+    )
     payment_intent_id = Column(String, nullable=True, unique=True)
     external_reference = Column(String, nullable=True)

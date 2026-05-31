@@ -2,7 +2,7 @@
 
 Demo data: 1 customer, 4 Apple products, 4 US warehouses with intentional inventory gaps.
 
-See **[../ASSESSMENT.md](../ASSESSMENT.md)** for product/warehouse IDs and test scenarios.
+See **[../SEED_DATA.md](../SEED_DATA.md)** for product/warehouse IDs and test scenarios.
 
 Reads configuration from **`../.env`** (the backend `.env`).
 

@@ -12,7 +12,11 @@ def _patch_orders_post(schema: dict) -> None:
     responses = orders_post["responses"]
 
     if "201" in responses:
-        media = responses["201"].setdefault("content", {}).setdefault("application/json", {})
+        media = (
+            responses["201"]
+            .setdefault("content", {})
+            .setdefault("application/json", {})
+        )
         media["example"] = {
             "order_id": 1,
             "warehouse_id": 2,
@@ -27,9 +31,9 @@ def _patch_orders_post(schema: dict) -> None:
         "422": {"detail": "No warehouse can fulfill the entire order"},
     }.items():
         if code in responses:
-            responses[code].setdefault("content", {}).setdefault("application/json", {})[
-                "example"
-            ] = example
+            responses[code].setdefault("content", {}).setdefault(
+                "application/json", {}
+            )["example"] = example
 
     if "404" in responses:
         responses["404"].setdefault("content", {}).setdefault("application/json", {})[

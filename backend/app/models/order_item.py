@@ -1,8 +1,9 @@
-from app.db.session import Base
-
-from sqlalchemy import Column, Integer, ForeignKey, Float, DateTime
 from datetime import datetime
+
+from sqlalchemy import Column, DateTime, ForeignKey, Integer
 from sqlalchemy.types import Numeric
+
+from app.db.session import Base
 
 
 class OrderItem(Base):
@@ -13,4 +14,6 @@ class OrderItem(Base):
     quantity = Column(Integer, nullable=False)
     unit_price = Column(Numeric(10, 2), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    updated_at = Column(
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
+    )

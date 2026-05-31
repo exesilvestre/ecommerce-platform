@@ -1,6 +1,6 @@
 import json
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
 from pathlib import Path
 
@@ -69,8 +69,10 @@ class SeedLoader:
                 text(f'ALTER SEQUENCE IF EXISTS "{sequence_name}" RESTART WITH 1')
             )
 
-    def _insert_seed_data(self, session: Session, data: SeedDataSchema) -> SeedLoadResult:
-        now = datetime.now(timezone.utc).replace(tzinfo=None)
+    def _insert_seed_data(
+        self, session: Session, data: SeedDataSchema
+    ) -> SeedLoadResult:
+        now = datetime.now(UTC).replace(tzinfo=None)
 
         customer_row = session.execute(
             text(

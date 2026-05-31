@@ -1,12 +1,12 @@
 from dataclasses import dataclass
 from decimal import Decimal
-from enum import Enum
+from enum import StrEnum
 from uuid import uuid4
 
 from app.core.constants import ERR_PAYMENT_FAILED
 
 
-class PaymentIntentStatus(str, Enum):
+class PaymentIntentStatus(StrEnum):
     REQUIRES_CONFIRMATION = "requires_confirmation"
     SUCCEEDED = "succeeded"
     FAILED = "failed"
