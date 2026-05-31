@@ -11,6 +11,7 @@ __pycache__/
 *.pyzwzw
 *.pyzwzwz
 .env
+.ruff_cache/
 
 .venv/
 
