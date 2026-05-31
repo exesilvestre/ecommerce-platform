@@ -1,49 +1,41 @@
 # Decision log — `POST /orders`
 
-Why the create-order endpoint works the way it does. How to test it: [SEED_DATA.md](SEED_DATA.md).
+Technical decisions for the create-order endpoint. Test scenarios: [SEED_DATA.md](SEED_DATA.md).
 
-## Mock geocoding
+## Geocoding (mock)
 
-The assessment allowed skipping real geocoding APIs so we could focus on order logic.
+Shipping address is converted to `(lat, lon)` before warehouse selection. A mock `GeocodingService` returns fixed coordinates for four seed addresses and a deterministic hash-based fallback for any other input. The interface is async and swappable for a real provider.
 
-We use a small in-memory geocoder: four demo addresses from the seed data map to coords near a warehouse; anything else gets stable fake coords from a hash of the address. That is enough to rank warehouses by distance. A real provider can plug into the same `geocode()` interface later.
+## Payments (mock)
 
-## Mock payments
-
-Same idea for payments — no Stripe/PCI in scope, but we still model create-then-confirm like PaymentIntents.
-
-Payment runs in memory. Create is idempotent; confirm fails only if the card ends in `0000` (402). We do not store card numbers, only `payment_intent_id` after success.
+Payment follows a Stripe-like flow: create PaymentIntent, then confirm. The mock stores intents in memory; create is idempotent by key, confirm returns **402** when the card ends in `0000`. Card data is not persisted — only `payment_intent_id` on success.
 
 ## Row locking
 
-Concurrent orders on the same SKU at the same warehouse could oversell stock if two requests read quantity and both decrement.
+Stock updates use `SELECT … FOR UPDATE` on `warehouse_inventory` rows before decrement or increment. Product IDs are locked in sorted order to reduce deadlocks on multi-item orders.
 
-Before changing stock we run `SELECT … FOR UPDATE` on the relevant `warehouse_inventory` rows (`with_for_update()` in `inventory_repository.py`). We lock products in a fixed order to avoid deadlocks on multi-item orders.
+Reservation runs inside a savepoint per warehouse attempt. Insufficient stock after lock rolls back the savepoint and tries the next nearest warehouse. On payment failure, stock is restored under the same lock pattern.
 
-Reserve happens inside a savepoint when we try a warehouse. If stock is not enough after the lock, we roll back and try the next nearest warehouse. If payment fails, we lock again, put stock back, and mark the order failed.
+Order and payment rows are locked after payment (confirm or failure). The idempotency row is locked on `complete()` to avoid conflicting cached responses on retry.
 
-We also lock the order and payment rows after payment (confirm or compensate) and the idempotency row when we cache the final response — so retries do not double-confirm or write conflicting cached bodies.
+Warehouse discovery is not locked; races are resolved at reservation time.
 
-Warehouse search itself is not locked. Two orders can both think a warehouse has stock; the loser finds out at reserve time and either tries another warehouse or gets 422.
+## Two-phase commit
 
-## Commit inventory before paying
+Inventory reservation and order creation (`AWAITING_PAYMENT`) are committed before payment. The DB session is closed before the payment call so row locks and connections are not held during external I/O.
 
-We commit the reservation and create the order in `AWAITING_PAYMENT`, then close the DB session before calling payment. We should not hold row locks or a connection open while waiting on Stripe (or the mock).
+Payment outcome is applied in a new session: confirm → `CONFIRMED`, decline → stock released and `FAILED`.
 
-If payment fails, a new session releases stock and marks the order failed. If it succeeds, a new session marks it confirmed.
+## Warehouse selection
 
-## Nearest warehouse, with fallback
-
-We list warehouses that can fulfill the full cart, sort by distance, and try the closest first. Each try is a savepoint: reserve + pending order together. Lost races move to the next warehouse instead of failing immediately.
+Eligible warehouses must fulfill the entire cart. They are sorted by haversine distance; the nearest is tried first. Each attempt is atomic (savepoint): reserve + pending order. A lost stock race falls through to the next warehouse.
 
 ## Idempotency
 
-`POST /orders` requires an `Idempotency-Key`. Same key + same body replays the stored 201 or 402. Same key + different body, or a request still in flight, returns 409.
+Requests require an `Idempotency-Key` (UUID) and store a hash of the body. Replays with the same key and body return the cached **201** or **402**. Mismatched body or in-flight request returns **409**.
 
-## Database
+## Schema
 
-Put your ER diagram here: **`docs/er-diagram.png`**
+![ER diagram](docs/supabase-schema-gmryjsuyljzxliamvqrd.png)
 
-![ER diagram](docs/er-diagram.png)
-
-Main tables: `customers`, `orders`, `order_items`, `payments`, `products`, `warehouses`, `warehouse_inventory`, `idempotency_keys`. Order goes `AWAITING_PAYMENT` → `CONFIRMED` or `FAILED`.
+Core path: `Customer` → `Order` → `OrderItem` / `Payment`; stock via `Warehouse` ↔ `WarehouseInventory` ↔ `Product`. Status: `AWAITING_PAYMENT` → `CONFIRMED` | `FAILED`.

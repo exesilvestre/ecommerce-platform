@@ -68,7 +68,7 @@ See `backend/.env.example` for configuration, and set `API_URL=http://localhost:
 |-----|---------|
 | [DECISION_LOG.md](DECISION_LOG.md) | Architectural decisions for `POST /orders` (mocks, row locking, idempotency) |
 | [SEED_DATA.md](SEED_DATA.md) | Seed catalog, demo addresses, and test scenarios |
-| [docs/er-diagram.png](docs/er-diagram.png) | ER diagram — place your PNG in the `docs/` folder |
+| [ER diagram](docs/supabase-schema-gmryjsuyljzxliamvqrd.png) | Database entity-relationship diagram |
 
 ## For reviewers
 
